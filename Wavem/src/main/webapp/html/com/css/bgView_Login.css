@@ -1,0 +1,42 @@
+@CHARSET "UTF-8";
+<style type="text/css">
+<!-- 공통 -->
+* { 
+	font-size: 20px;
+	font-family: 맑은 고딕;
+	width:1300px;
+	color: #039;
+}
+
+body { 
+	margin: 0 auto; 
+	width: 1300px; 
+	height:100%;
+	font-family: 맑은 고딕;
+	background: lightgray;
+}
+
+header, section, footer{
+		display: block;
+		width: 920px;
+		margin: 0px auto;
+	}
+	
+header{
+	margin-top: 50px;
+	height: 45px;
+	border-top:5px solid #1A668E;
+	background: #173849; 
+}
+
+section{
+	height: 450px;
+	background: white; 
+}
+
+footer{
+	height: 30px;
+	background: #2284B8;
+	border-bottom:5px solid #1A668E;
+	color: #FFFFFF;
+}

@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Expense">
+	<select id="searchExpense" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+			SELECT A.APP_CODE
+			        ,B.EXP_CODE
+			        ,TO_CHAR(TO_DATE(B.EXP_DATE, 'YYYY/MM/DD'), 'yyyy/mm/dd') AS EXP_DATE
+			        ,E.MEM_NAME AS EXP_NAME
+			        ,A.APP_STATE
+			        ,C.NAME_1 || ' ' || C.NAME_2 AS APP_STATE_NM
+			        ,A.APP_DATE
+			        ,A.APP_DAM
+			        ,A.APP_TEAM
+			        ,A.APP_EXECUTIVE
+			        ,A.APP_MASTER
+			      <!-- ,B.BRE_START || B.BRE_OVER || E.MEM_NAME AS BRE_TITLE_NM -->
+			    FROM APP_TAB A
+			        ,EXP_TAB B
+			        ,COM_COD C
+			        ,COM_COD D
+			        ,MEM_TAB E
+			   WHERE 1 = 1
+			     AND A.APP_STATE = TRIM(C.COM_GROUP || C.COM_CODE)
+			     AND A.APP_CODE = B.APP_CODE
+			     <!-- AND B.BRE_TYPE = TRIM(D.COM_GROUP || D.COM_CODE) -->
+			     AND E.MEM_CODE = A.MEM_CODE
+	       <isNotEqual property="MEM_CODE" compareValue="S0000000" prepend="">
+	       AND ((A.APP_DAM = #MEM_CODE#) OR
+	           (A.APP_TEAM = #MEM_CODE# AND (A.APP_STATE = 'AP020' or A.APP_STATE = 'AP040' or A.APP_STATE = 'AP050' or A.APP_STATE = 'AP060'))OR
+	           (A.APP_EXECUTIVE = #MEM_CODE# AND ( A.APP_STATE = 'AP040' or A.APP_STATE = 'AP050' or A.APP_STATE = 'AP060'))OR
+	           (A.APP_MASTER = #MEM_CODE# AND ( A.APP_STATE = 'AP050' or A.APP_STATE = 'AP060')))
+	       </isNotEqual>
+	       
+	       <isEqual property="search_menu" compareValue="mem_name" prepend="">
+   		  		AND E.MEM_NAME LIKE '%'||#search_value#||'%'
+   		  </isEqual>
+   		  
+   		  <!--  <isEqual property="search_menu" compareValue="search_title" prepend="">
+   		  		AND D.NAME_1 LIKE '%'||#search_value#||'%'
+   		  </isEqual>
+   		   -->
+	       <isNotEmpty property="SEARCH_STATE" prepend="">
+				AND A.APP_STATE = #SEARCH_STATE#
+		  </isNotEmpty>
+	  ORDER BY B.FIR_REG_DAY DESC
+ 	</select>
+ 	
+ 	<select id="searchInsertExpense" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+ 		SELECT C.EXP_CODE,
+		       C.APP_CODE,
+		       (SELECT MEM_NAME
+		          FROM MEM_TAB
+		         WHERE 1 = 1
+		           AND MEM_CODE = '00000000') AS APP_MASTER_NM,
+		       TO_CHAR(TO_DATE(C.EXP_DATE, 'YYYY/MM/DD'), 'yyyy/mm/dd') AS EXP_DATE,
+		       C.FIR_REG_DAY,
+		       C.FIR_REG,
+		       C.LAT_REG_DAY,
+		       C.LAT_REG,
+		       C.EXP_TEAM,
+		       C.EXP_LEVEL,
+		       C.EXP_NAME,
+		       A.MEM_POST,
+		       (SELECT d.MEM_POST
+		         FROM MEM_TAB D
+		         WHERE 1 = 1
+		           AND d.MEM_CODE = b.APP_TEAM) AS APP_TEAM_LEVEL_NM,
+		        (SELECT d.MEM_POST
+		         FROM MEM_TAB D
+		         WHERE 1 = 1
+		           AND d.MEM_CODE = b.APP_EXECUTIVE) AS APP_EXECUTIVE_LEVEL_NM,
+		       A.MEM_CODE,
+		       A.DEP_CODE,
+		       B.APP_DAM,
+		       B.APP_TEAM,
+		       B.APP_EXECUTIVE,
+		       B.APP_CODE,
+		       B.APP_STATE
+		  FROM MEM_TAB A, APP_TAB B, EXP_TAB C
+		 WHERE 1 = 1
+		   AND A.MEM_CODE = B.MEM_CODE
+		   AND B.APP_CODE = C.APP_CODE
+		   AND C.EXP_CODE= #EXP_CODE#
+ 	</select>
+ 	
+ 	<select id="selectAppCodeKey" resultClass="String">
+ 		SELECT 'AP'||LPAD(APP_SEQ.NEXTVAL,6,'0') AS app_code_key FROM DUAL
+ 	</select>
+ 	
+ 	<insert id="semisaveExpense" parameterClass="java.util.Map">
+		INSERT ALL
+		INTO BRE_TAB
+		  (BRE_CODE
+		  ,APP_CODE
+		  ,BRE_DATE
+		  ,BRE_TEAM
+		  ,BRE_LEVEL
+		  ,BRE_NAME
+	      ,BRE_TYPE
+	      ,BRE_REASON
+	      ,BRE_TAKEOVER
+	      ,BRE_START
+	      ,BRE_OVER
+	      ,FIR_REG_DAY
+	      ,FIR_REG)
+		VALUES
+		  ('BR'||LPAD(BRE_SEQ.NEXTVAL,6,'0')
+		  ,#app_code_key#
+		  ,REPLACE(#BRE_DATE#, '/')
+		  ,#BRE_TEAM#
+		  ,#BRE_LEVEL#
+		  ,#BRE_NAME#
+		  ,#BRE_TYPE#
+		  ,#BRE_REASON#
+		  ,#BRE_TAKEOVER#
+		  ,REPLACE(#BRE_START_DATE#, '/')
+		  ,REPLACE(#BRE_OVER_DATE#, '/')
+		  ,TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+		  ,'system')
+		  
+		  INTO APP_TAB
+			  (APP_CODE
+		      ,APP_STATE
+		      ,APP_DATE
+		      ,APP_DAM
+		      ,APP_TEAM
+		      ,APP_EXECUTIVE
+		      ,APP_MASTER
+		      ,FIR_REG_DAY
+		      ,FIR_REG
+		      ,MEM_CODE)
+		VALUES 
+			(#app_code_key#
+			,'0'
+			,#APP_DATE#
+			,#APP_DAM#
+			,#APP_TEAM#
+			,#APP_EXECUTIVE#
+			,#APP_MASTER#
+		  	,TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+		  	,#FIR_REG#
+		  	,#MEM_CODE#)
+		SELECT * FROM DUAL
+ 	</insert>
+ 	
+ 	
+ 	
+ 	<insert id="saveExpense" parameterClass="java.util.Map">
+		INSERT ALL
+		INTO BRE_TAB
+		  (BRE_CODE
+		  ,APP_CODE
+		  ,BRE_DATE
+		  ,BRE_TEAM
+		  ,BRE_LEVEL
+		  ,BRE_NAME
+	      ,BRE_TYPE
+	      ,BRE_REASON
+	      ,BRE_TAKEOVER
+	      ,BRE_START
+	      ,BRE_OVER
+	      ,FIR_REG_DAY
+	      ,FIR_REG)
+		VALUES
+		  ('BR'||LPAD(BRE_SEQ.NEXTVAL,6,'0')
+		  ,#app_code_key#
+		  ,REPLACE(#BRE_DATE#, '/')
+		  ,#BRE_TEAM#
+		  ,#BRE_LEVEL#
+		  ,#BRE_NAME#
+		  ,#BRE_TYPE#
+		  ,#BRE_REASON#
+		  ,#BRE_TAKEOVER#
+		  ,REPLACE(#BRE_START_DATE#, '/')
+		  ,REPLACE(#BRE_OVER_DATE#, '/')
+		  ,TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+		  ,'system')
+		  
+		  INTO APP_TAB
+			  (APP_CODE
+		      ,APP_STATE
+		      ,APP_DATE
+		      ,APP_DAM
+		      ,APP_TEAM
+		      ,APP_EXECUTIVE
+		      ,APP_MASTER
+		      ,FIR_REG_DAY
+		      ,FIR_REG
+		      ,MEM_CODE)
+		VALUES 
+			(#app_code_key#
+			,'1'
+			,#APP_DATE#
+			,#APP_DAM#
+			,#APP_TEAM#
+			,#APP_EXECUTIVE#
+			,#APP_MASTER#
+		  	,TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+		  	,#FIR_REG#
+		  	,#MEM_CODE#)
+		SELECT * FROM DUAL
+ 	</insert>
+ 	
+ 	<update id="updateExpense" parameterClass="java.util.Map"> 	
+		UPDATE BRE_TAB 
+			 SET BRE_TYPE		= #BRE_TYPE#
+				,BRE_REASON 	= #BRE_REASON#
+				,BRE_START		= REPLACE(#BRE_START_DATE#, '/')
+				,BRE_OVER  		= REPLACE(#BRE_OVER_DATE#, '/')
+				,LAT_REG     	= '00000000'
+  				,LAT_REG_DAY	= TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+			WHERE 1=1
+			<isNotEmpty property="BRE_CODE" prepend="">
+					AND BRE_CODE = #BRE_CODE#
+			</isNotEmpty>
+			
+ 	</update>
+ 	
+ 	<update id="updateExpense2" parameterClass="java.util.Map"> 	
+		UPDATE APP_TAB 
+			 SET APP_DAM		= #APP_DAM#
+				,APP_TEAM	 	= #APP_TEAM#
+				,APP_EXECUTIVE	= #APP_EXECUTIVE#
+				,APP_MASTER  	= #APP_MASTER#
+				,LAT_REG     	= '00000000'
+  				,LAT_REG_DAY	= TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+			WHERE 1=1
+			<isNotEmpty property="APP_CODE" prepend="">
+				AND APP_CODE = #APP_CODE#
+			</isNotEmpty>
+ 	</update>
+ 	
+ 	
+ 	<update id="updateApproval" parameterClass="java.util.Map"> 	
+		UPDATE APP_TAB 
+			 SET APP_STATE		= TO_NUMBER(APP_STATE) + 1
+				,LAT_REG     	= '00000000'
+  				,LAT_REG_DAY	= TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+			WHERE 1=1
+			AND APP_CODE = #APP_CODE#
+ 	</update>
+ 	
+ 	
+ 	<update id="updateRollback" parameterClass="java.util.Map"> 	
+		UPDATE APP_TAB 
+			 SET APP_STATE		= '1'
+				,LAT_REG     	= '00000000'
+  				,LAT_REG_DAY	= TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+			WHERE 1=1
+			AND APP_CODE = #APP_CODE#
+ 	</update>
+</sqlMap>

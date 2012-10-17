@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Mypage">
+	<select id="searchMypage" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT MEM_ID
+				 ,MEM_NAME
+				 ,PASSWORD
+				 ,DEP_CODE
+				 ,(SELECT B.DEP_NAME
+				 	FROM DEP_TAB B
+				   WHERE A.DEP_CODE = B.DEP_CODE) AS DEP_NAME
+				 ,MEM_POST
+				 ,CON_TYPE
+				 ,HP
+				 ,TEL
+				 ,ADDRESS
+				 ,BIRTHDAY
+				 ,SPECIAL_DAY
+				 ,HIRED_DAY
+				 ,RETIRE_DAY
+  		 FROM MEM_TAB A
+ 		WHERE 1 = 1
+   		   AND MEM_CODE = #memCode#
+	</select>
+		
+	<update id="updateMypage">
+		
+	</update>
+</sqlMap>

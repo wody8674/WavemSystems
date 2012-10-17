@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Canvas Example</title>
+		<!--[if IE]><script type="text/javascript" src="excanvas.js"></script><![endif]-->
+	</head>
+	<style>
+		video {
+			border: 5px solid red;
+		}
+		canvas {
+			border: 5px solid blue;
+		}
+		img {
+			width: 96px;
+			height: 54px;
+		}
+	</style>
+	<body>
+		<video id="v" width="480" height="360" controls autoplay>
+			<source src="./resource/Ui.mp4" type="video/mp4">
+			<source src="./resource/sample.ogv" type="video/ogv">			
+		</video>
+		<canvas id="c" width="480" height="360"></canvas>
+		<hr>
+		<button id="play">
+			play
+		</button>
+		<button id="pause">
+			pause
+		</button>
+		<button id="mute">
+			mute
+		</button>
+		<button id="capture">
+			capture
+		</button>
+		
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+		<script type="text/javascript" src="./js/video.js"></script>
+		
+	</body>
+</html>
+

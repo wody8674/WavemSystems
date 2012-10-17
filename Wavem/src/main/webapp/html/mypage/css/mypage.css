@@ -1,0 +1,12 @@
+@CHARSET "UTF-8";
+
+.tab_class-a
+{
+	font-family: "맑은 고딕";
+	font-size: 15px;
+	margin-bottom: 5px;
+	text-align: left;
+	border-collapse: collapse;
+	cellpadding: 5px;
+	width: 40%;
+}

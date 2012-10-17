@@ -1,0 +1,32 @@
+@CHARSET "UTF-8";
+
+h1 {
+	font-size: 30px;
+	font-weight: bold;
+	padding: 5px;
+	margin: 0;
+	text-align: center;
+}
+
+h2 {
+	font-size: 18px;
+	font-weight: bold;
+	padding: 5px;
+	margin: 0;
+	text-align: center;
+}
+
+.input_button {
+	color:black;
+	background-color:#F8F8FF;
+	border:1px solid #111111;
+	height:35px;
+	width:80px;
+	padding:3px 8px 6px 8px; 
+	font-size: 15px;
+}
+
+.input_textarea {
+	height:25px;
+	width:200px;
+}

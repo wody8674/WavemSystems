@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Common">
+ 
+ <typeAlias alias="Common" type="com.wavem.convergence.common.vo.CommonVo"/>
+
+ <select id="selectMenu" parameterClass="java.util.Map" resultClass="Common">
+	SELECT A.MN_MENU_ID
+	      ,A.MN_MENU_NM
+	      ,B.SB_MENU_ID
+	      ,B.SB_MENU_NM
+	      ,B.URL
+	      ,A.USER_CHECK
+	  FROM MMN_TAB A
+	      ,SMN_TAB B
+	 WHERE 1 = 1
+ 	 <isNotEqual property="user_mc" compareValue="S0000000" prepend="">
+	 	AND A.USER_CHECK = '0'
+	 </isNotEqual>
+	 	AND A.MN_MENU_ID = B.MN_MENU_ID
+	 ORDER BY A.LOC_NO
+	         ,B.LOC_NO
+  </select>
+</sqlMap>

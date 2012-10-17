@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Book">
+	
+ 	<select id="searchBook" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT A.BOK_CODE
+      			 ,A.BOK_NAME
+      			 ,A.BOK_TYPE
+      			 ,(SELECT C.NAME_1
+         		    FROM COM_COD C
+        		   WHERE 1 = 1
+           			   AND A.BOK_TYPE = C.COM_GROUP || C.COM_CODE) AS BOK_TYPE_NM
+      			 ,A.PUBLISHER
+      			 ,OWNER
+      			 ,(SELECT C.MEM_POST
+      			 	FROM MEM_TAB C
+      			  WHERE 1=1
+      			  	 AND B.OWNER = C.MEM_CODE) AS OWN_POST
+      			 ,NVL((SELECT C.MEM_NAME
+        		    FROM MEM_TAB C
+				   WHERE 1 = 1
+           			  AND B.OWNER = C.MEM_CODE), '공동소유') AS OWNER_NM
+           		,(SELECT C.DEP_CODE
+          		   FROM MEM_TAB C
+         		  WHERE 1 = 1
+           			 AND B.OWNER = C.MEM_CODE) AS DEP_CODE
+      			 ,TO_CHAR(TO_DATE(B.OWN_DAY, 'YYYY/MM/DD'), 'yyyy/mm/dd') AS OWN_DAY
+      			 ,A.SALE_MEM
+      			 ,(SELECT C.MEM_POST
+      			 	FROM MEM_TAB C
+      			 	WHERE 1=1
+      			 	  AND A.SALE_MEM = C.MEM_CODE ) AS SALE_POST
+      			 ,(SELECT C.MEM_NAME
+        		    FROM MEM_TAB C
+				   WHERE 1 = 1
+           			  AND A.SALE_MEM = C.MEM_CODE) AS SALE_MEM_NM
+           		 ,TO_CHAR(TO_DATE(SALE_DAY, 'YYYY/MM/DD'), 'yyyy/mm/dd') AS SALE_DAY
+		FROM BOK_TAB A
+			    ,MEM_BOK B
+		WHERE 1 = 1
+		   AND A.BOK_CODE = B.BOK_CODE
+		   <isEqual property="search_menu" compareValue="bok_name" prepend="">
+		   		AND BOK_NAME LIKE '%'||#search_value#||'%'
+		   </isEqual>
+		   <isEqual property="search_menu" compareValue="bok_type" prepend="">
+		   		AND BOK_TYPE LIKE '%'||#search_value#||'%'
+		   </isEqual>
+		   <isEqual property="search_menu" compareValue="publisher" prepend="">
+		   		AND PUBLISHER LIKE '%'||#search_value#||'%'
+		   </isEqual>
+		   <isEqual property="search_menu" compareValue="owner" prepend="">
+		   		AND OWNER LIKE '%'||#search_value#||'%'
+		   </isEqual>
+		   <isEqual property="search_menu" compareValue="bok_info" prepend="">
+				AND A.BOK_CODE = #search_value#
+			</isEqual>
+		   <isNotEmpty property="dep_code_value">
+		   		AND (SELECT C.DEP_CODE
+          				 FROM MEM_TAB C
+         				WHERE 1 = 1
+           				   AND B.OWNER = C.MEM_CODE) = #dep_code_value#
+		   </isNotEmpty>
+		   <isNotEmpty property="bok_type">
+		   		AND BOK_TYPE = #bok_type#
+		   </isNotEmpty>
+ 	</select>
+ 	
+ 	<insert id="saveBook">
+		INSERT ALL 
+		INTO BOK_TAB
+				(BOK_CODE
+				,BOK_NAME
+				,BOK_TYPE
+				,PUBLISHER
+				,FIR_REG
+				,FIR_REG_DAY
+				,LAT_REG
+				,LAT_REG_DAY
+				,SALE_MEM
+				,SALE_DAY)
+		VALUES
+				((SELECT LPAD(NVL(MAX(TO_NUMBER(BOK_CODE)), 0) + 1, 8, '0') FROM BOK_TAB)
+				,#bok_name#
+				,#bok_type#
+				,#publisher#
+				,'00000001'
+			  	,TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+				,'00000001'
+			  	,TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+				,#sale_name#
+				,REPLACE(#sale_day#, '/'))
+		INTO MEM_BOK
+				(BOK_CODE
+				,OWNER
+				,OWN_DAY
+				,LAT_REG
+				,LAT_REG_DAY)
+		VALUES
+				((SELECT LPAD(NVL(MAX(TO_NUMBER(BOK_CODE)), 0) + 1, 8, '0') FROM BOK_TAB)
+				,#own_name#
+				,REPLACE(#own_day#, '/')
+				,'00000001'
+			  	,TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS'))
+		SELECT *
+		FROM DUAL
+ 	</insert>
+ 	
+ 	<update id="updateBok_tab" >
+ 		UPDATE BOK_TAB
+	  		 SET BOK_NAME   	= #bok_name#
+				  ,BOK_TYPE    	= #bok_type#
+				  ,PUBLISHER   	= #publisher#
+				  ,LAT_REG     	= '00000001'
+				  ,LAT_REG_DAY	= TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+				  ,SALE_MEM    = #sale_name#
+				  ,SALE_DAY    	= REPLACE(#sale_day#, '/')
+		WHERE BOK_CODE = #bok_code#
+ 	</update>
+		 	
+ 	<update id="updateMem_bok" >
+		UPDATE MEM_BOK
+			 SET OWNER       	= #own_name#
+				  ,OWN_DAY		= REPLACE(#own_day#, '/')
+				  ,LAT_REG		= '00000001'
+				  ,LAT_REG_DAY	= TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+		WHERE BOK_CODE = #bok_code#
+ 	</update>
+ 	
+</sqlMap>

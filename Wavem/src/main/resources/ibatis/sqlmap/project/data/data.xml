@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Data">
+
+	<select id="selectData" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT A.DAT_CODE,
+		       A.PRO_CODE,
+		       B.PRO_NAME,
+		       A.TITLE,
+		       A.CONTENTS,
+		       A.FIR_REG, 
+		       C.MEM_NAME,
+		       A.FIR_REG_DAY 
+		  FROM DAT_TAB A, 
+		       PRO_TAB B ,
+		       MEM_TAB C
+		 WHERE 1 = 1 
+		       AND A.PRO_CODE = B.PRO_CODE
+		       AND A.FIR_REG = C.MEM_CODE
+		       <isEqual property="search" compareValue="dataDetail" prepend="">
+				    /*상세보기용 코드*/
+					AND  A.DAT_CODE = #search_value#
+				</isEqual>
+	</select>
+	
+	<insert id="saveData">
+		INSERT INTO DAT_TAB
+		  (DAT_CODE
+		  ,PRO_CODE
+		  ,TITLE
+		  ,CONTENTS
+		  ,FIR_REG_DAY
+		  ,FIR_REG
+		  ,LAT_REG_DAY
+		  ,LAT_REG)
+		VALUES
+		(
+		  (SELECT TRIM(TO_CHAR(NVL(CONUT(DAT_CODE), 0) + 1, '00000000'))
+		  	FROM DAT_TAB),
+		  ,#pro_code#
+		  ,#title#
+		  ,#data_content#
+		  ,'00000001'
+		  ,TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+		  ,'00000001'
+		  ,TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+	</insert>
+	
+	<select id="searchData" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT A.DAT_CODE, 
+		       A.PRO_CODE, 
+		       B.PRO_NAME, 
+		       A.TITLE, 
+		       A.CONTENTS,
+		       A.FIR_REG, 
+		       C.MEM_NAME,
+		       A.FIR_REG_DAY 
+		  FROM DAT_TAB A, 
+		       PRO_TAB B ,
+		       MEM_TAB C
+		 WHERE 1 = 1 
+		       AND A.PRO_CODE = B.PRO_CODE
+		       AND A.FIR_REG = C.MEM_CODE
+		<isEqual property="search" compareValue="title"  prepend="">
+			AND A.TITLE LIKE '%'||#search_value#||'%'
+		</isEqual>
+		<isEqual property="search" compareValue="writer" prepend="">
+			AND C.MEM_NAME = #search_value#
+		</isEqual>
+		<isEqual property="search" compareValue="depname" prepend="">
+			AND B.PRO_NAME LIKE '%'||#search_value#||'%'
+		</isEqual>
+	</select>	
+</sqlMap>

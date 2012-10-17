@@ -1,0 +1,43 @@
+@CHARSET "UTF-8";
+
+#main { 
+	padding:10px 10px 10px 10px;
+	font-family: 맑은 고딕;
+	width: 90%; 
+	background: ffffff;
+}
+
+.tab_class-a
+{
+	font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+	font-size: 12px;
+	margin-bottom: 5px;
+	text-align: left;
+	border-collapse: collapse;
+	border: 1px solid gray;
+	width: 100%;
+}
+
+.tab_class-a th
+{
+	padding: 12px 17px 12px 17px;
+	font-weight: bold;
+	font-size: 14px;
+	/* color: #039; */
+	background-color:#ececec;
+	border-bottom: 1px solid gray;
+	border-left: 1px solid gray;
+}
+.tab_class-a td
+{
+	height:30px;
+	padding: 7px 17px 7px 17px;
+	border-bottom: 1px dashed gray;
+	border-left: 1px dashed gray;
+	/* color: #669; */
+}
+.tab_class-a tbody tr:hover td
+{
+	/* color: #339; */
+	background: #d0dafd;
+}

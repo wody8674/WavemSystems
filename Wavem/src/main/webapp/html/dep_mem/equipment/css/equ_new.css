@@ -1,0 +1,30 @@
+@CHARSET "UTF-8";
+
+<style type="text/css">
+html{
+	background: #f2f2f2;
+	font-family: 맑은 고딕; 
+}
+
+#main { 
+	margin : 5px 15px 5px 15px; 
+	font-family: 맑은 고딕; 
+	background-color: #ffffff;
+}
+
+#equipment{
+
+}
+
+#equipment th{
+	font-size:14px;
+	font-weight:normal;
+	text-align: center; 
+	background-color:#ececec;
+	border:1px solid gray;
+}
+
+#equipment td{
+	background-color:#ffffff;
+	border:1px solid gray;
+}

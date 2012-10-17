@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Notice">
+	<select id="searchGubun_Dep" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT DEP_CODE, 
+		       DEP_NAME 
+		  FROM DEP_TAB
+	</select>
+	
+	<select id="searchGubun_Pro" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT PRO_CODE, 
+		       PRO_NAME 
+		  FROM PRO_TAB
+	</select>
+	
+	<insert id="saveNoticeDetail">
+		INSERT 
+		  INTO BOA_TAB 
+		       ( 
+		           BOA_CODE, 
+		           BOA_TYPE, 
+		           MEM_CODE, 
+		           DEP_CODE, 
+		           PRO_CODE, 
+		           TITLE, 
+		           CONTENTS, 
+		           FIR_REG_DAY, 
+		           FIR_REG 
+		       ) 
+		       VALUES 
+		       ( 
+	              (SELECT TRIM(TO_CHAR(SYSDATE, 'YYYYMMDD') || TRIM(TO_CHAR(TRIM(NVL(COUNT(BOA_CODE), 0) + 1), '0000'))) 
+	                FROM BOA_TAB
+	              ), 
+	              #notice_gubun1#, 
+	              TRIM(#user_mc#), 
+	              #notice_gubun2#, 
+	              #notice_gubun2#, 
+	              #notice_title#, 
+	              #notice_content#,
+	              TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS'),
+	              TRIM(#user_mc#) 
+	          ) 
+	</insert>
+	
+	<update id="updateNoticeDetail">
+		UPDATE BOA_TAB 
+		   SET BOA_TYPE = #notice_gubun1#,
+		       DEP_CODE = #notice_gubun2#, 
+		       PRO_CODE = #notice_gubun2#, 
+		       TITLE = #notice_title#, 
+		       CONTENTS = #notice_content#, 
+		       LAT_REG = TRIM(#user_mc#), 
+		       LAT_REG_DAY = TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+		 WHERE 1 = 1
+		   AND BOA_CODE = #boa_code#
+	</update>
+	
+	<select id="searchNotice" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT * 
+		  FROM 
+			   (SELECT A.BOA_CODE, 
+					   A.BOA_TYPE, 
+					   B.NAME_1 AS BOA_TYPE_NAME, 
+					   A.MEM_CODE, 
+					   C.MEM_NAME, 
+					   A.DEP_CODE, 
+					   NVL(D.DEP_NAME, '-') AS DEP_NAME, 
+					   A.PRO_CODE, 
+					   NVL(E.PRO_NAME, '-') AS PRO_NAME, 
+					   A.TITLE, 
+					   A.CONTENTS, 
+					   TO_CHAR(TO_DATE(SUBSTR(TRIM(A.FIR_REG_DAY), 0, 8), 'YYYY/MM/DD'), 'YYYY/MM/DD') AS FIR_REG_DAY, 
+					   CEIL((ROW_NUMBER() OVER(ORDER BY A.BOA_CODE DESC)) / 15) PAGENUM, 
+					   CEIL(COUNT( * ) OVER() / 15) TOTALPAGE
+				  FROM BOA_TAB A, 
+					   COM_COD B, 
+					   MEM_TAB C, 
+					   DEP_TAB D, 
+					   PRO_TAB E 
+				 WHERE 1 = 1 
+					   AND A.BOA_TYPE = TRIM((B.COM_GROUP || B.COM_CODE)) 
+					   AND A.MEM_CODE = C.MEM_CODE 
+					   AND A.DEP_CODE = D.DEP_CODE(+) 
+					   AND A.PRO_CODE = E.PRO_CODE(+)
+					   AND SUBSTR(A.BOA_TYPE, 0, 2) = 'BA'
+					   <isNotEmpty property="boa_code">
+					   AND A.BOA_CODE = #boa_code#
+					   </isNotEmpty>
+					   <isNotEmpty property="notice_gubun1">
+					   AND A.BOA_TYPE = #notice_gubun1#
+					   </isNotEmpty> 
+					   
+					   <isNotEmpty property="notice_gubun1">
+						   <isEqual property="notice_gubun1" compareValue="BA001">
+							   <isNotEmpty property="notice_gubun2">
+							   AND A.DEP_CODE = #notice_gubun2#
+							   </isNotEmpty> 
+						   </isEqual>
+						   <isEqual property="notice_gubun1" compareValue="BA002">
+							   <isNotEmpty property="notice_gubun2">
+							   AND A.PRO_CODE = #notice_gubun2#
+							   </isNotEmpty>
+						   </isEqual>
+					   </isNotEmpty>
+					   
+					   <isNotEmpty property="search_gubun">
+						   <isEqual property="search_gubun" compareValue="title">
+							   <isNotEmpty property="search_gubun_content">
+							   AND A.TITLE LIKE '%' || #search_gubun_content# || '%'
+							   </isNotEmpty>  
+						   </isEqual>
+						   <isEqual property="search_gubun" compareValue="writer">
+							   <isNotEmpty property="search_gubun_content">
+							   AND A.CONTENTS LIKE '%' || #search_gubun_content# || '%'
+							   </isNotEmpty>  
+						   </isEqual>
+					   </isNotEmpty>
+			  ORDER BY A.BOA_CODE DESC )
+		<isNotEmpty property="page"> 
+		 WHERE PAGENUM = #page#
+		 </isNotEmpty>
+	</select>
+</sqlMap>		

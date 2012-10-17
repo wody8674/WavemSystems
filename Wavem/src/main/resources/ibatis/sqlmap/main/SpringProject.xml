@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="SpringProject">
+	
+	<typeAlias alias="springProject" type="com.wavem.convergence.main.vo.SpringProjectVo"/>
+
+	<select id="selectSpringProject" resultClass="springProject">
+		<![CDATA[
+		SELECT USER_ID
+		      ,ASSIGN_CD
+		      ,USER_NM
+		      ,LEVEL_NM
+		      ,HP
+		      ,EMAIL
+		  FROM RESTCM_USERCD_MST
+		 WHERE USER_ID = 'wody8674'
+		 ]]>
+	</select>
+	
+	<insert id="insertSpringProject">
+		<![CDATA[
+		INSERT INTO TEST_1
+			(COL_1, COL_2, COL_3)
+		VALUES
+			('SpringProject', 'test', 'test')
+	   ]]>
+	</insert>
+	
+	<update id="updateSpringProject">
+		<![CDATA[
+		UPDATE TEST_1
+		   SET COL_2 = 'updateTest'
+		      ,COL_3 = 'updateTest'
+		 WHERE COL_1 = 'SpringProject'
+	   ]]>
+	</update>
+	
+	<delete id="deleteSpringProject">
+		<![CDATA[
+		DELETE TEST_1
+	 	 WHERE COL_1 = 'SpringProject'
+	 	]]>
+	</delete>
+	
+	<select id="selectParam" parameterClass="springProject" resultClass="springProject">
+		<![CDATA[
+		SELECT USER_ID
+		      ,ASSIGN_CD
+		      ,USER_NM
+		      ,LEVEL_NM
+		      ,HP
+		      ,EMAIL
+		  FROM RESTCM_USERCD_MST
+		 WHERE USER_ID = #param_user_id#
+		 ]]>
+	</select>
+	
+</sqlMap>
+	

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Contract">
+	
+	<select id="searchContract" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT BRE_CODE
+		      ,APP_CODE
+		      ,BRE_DATE
+		      ,BRE_TYPE
+		      ,BRE_TAKEOVER
+		      ,BRE_START
+		      ,BRE_OVER
+		      ,FIR_REG_DAY
+		      ,FIR_REG
+		      ,LAT_REG_DAY
+		      ,LAT_REG
+		      ,BRE_TEAM
+		      ,BRE_LEVEL
+		      ,BRE_NAME
+	  FROM BRE_TAB
+	  </select>
+	  
+ 	<insert id="saveContract">
+		INSERT INTO BRE_TAB
+		  (BRE_CODE
+		  ,BRE_DATE
+		  ,BRE_TEAM
+		  ,BRE_LEVEL
+		  ,BRE_NAME
+	      ,BRE_TYPE
+	      ,BRE_TAKEOVER
+	      ,BRE_START
+	      ,BRE_OVER
+	      ,FIR_REG_DAY
+	      ,FIR_REG)
+		VALUES
+		  (bre_seq.NEXTVAL
+		  ,#bre_reg_date#
+		  ,#bre_team#
+		  ,#bre_level#
+		  ,#bre_name#
+		  ,#bre_type#
+		  ,#bre_takeover#
+		  ,#bre_start_date#
+		  ,#bre_over_date#	
+		  ,TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+		  ,'system')
+ 	</insert>
+</sqlMap>

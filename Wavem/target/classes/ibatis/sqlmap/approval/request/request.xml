@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Request">
+	
+	<select id="searchRequest" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT A.APP_CODE
+	          ,B.REQ_CODE
+	          ,TO_CHAR(TO_DATE(B.REQ_DATE, 'YYYY/MM/DD'), 'yyyy/mm/dd') AS REQ_DATE
+	          ,(SELECT M.MEM_NAME 
+	              FROM MEM_TAB M 
+	              WHERE M.MEM_CODE = A.MEM_CODE) AS REQ_NAME
+	          ,DECODE(A.APP_STATE,'0','임시저장'
+						           ,'1','결재대기'
+						           ,'2','결재처리 중'
+						           ,'3','결재처리 중'
+						           ,'4','결재완료'
+						           ,'결재오류') AS APP_STATE_NM
+	          ,B.REQ_TITLE
+	          ,A.APP_DAM
+	          ,A.APP_STATE
+	          ,A.APP_TEAM
+	          ,A.APP_EXECUTIVE
+	      
+	      FROM APP_TAB A
+	          ,REQ_TAB B
+	     WHERE 1 = 1
+	       AND A.APP_CODE = B.APP_CODE
+	       AND ((A.APP_DAM = #MEM_CODE#) OR
+	       		(A.APP_DAM = '00000000') OR
+	           (A.APP_TEAM = #MEM_CODE# AND A.APP_STATE >= '1') OR
+	           (A.APP_TEAM = '00000000') OR
+	           (A.APP_EXECUTIVE = #MEM_CODE# AND A.APP_STATE >= '2') OR
+	           (A.APP_EXECUTIVE = '00000000') OR
+	           (A.APP_MASTER = #MEM_CODE# AND A.APP_STATE >= '3')OR
+	           (A.APP_MASTER = '00000000'))
+	  ORDER BY B.FIR_REG_DAY DESC
+ 	</select>
+ 	
+ 	<select id="searchInsertRequest" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+ 		SELECT C.REQ_CODE,
+		       C.APP_CODE,
+		       (SELECT MEM_NAME
+		          FROM MEM_TAB
+		         WHERE 1 = 1
+		           AND MEM_CODE = '00000000') AS APP_MASTER_NM,
+		       TO_CHAR(TO_DATE(C.REQ_DATE, 'YYYY/MM/DD'), 'yyyy/mm/dd') AS REQ_DATE,
+		       C.REQ_TITLE,
+		       C.REQ_CONTENTS,
+		       C.FIR_REG_DAY,
+		       C.FIR_REG,
+		       C.LAT_REG_DAY,
+		       C.LAT_REG,
+		       A.MEM_POST,
+		       (SELECT d.MEM_POST
+		         FROM MEM_TAB D
+		         WHERE 1 = 1
+		           AND d.MEM_CODE = b.APP_TEAM) AS APP_TEAM_LEVEL_NM,
+		        (SELECT d.MEM_POST
+		         FROM MEM_TAB D
+		         WHERE 1 = 1
+		           AND d.MEM_CODE = b.APP_EXECUTIVE) AS APP_EXECUTIVE_LEVEL_NM,
+		       A.MEM_CODE,
+		       A.DEP_CODE,
+		       B.APP_DAM,
+		       B.APP_TEAM,
+		       B.APP_EXECUTIVE,
+		       B.APP_CODE,
+		       B.APP_STATE
+		  from MEM_TAB A, APP_TAB B, REQ_TAB C
+		 WHERE 1 = 1
+		   AND A.MEM_CODE = b.MEM_CODE
+		   AND B.APP_CODE = c.APP_CODE
+		   AND C.REQ_CODE= #REQ_CODE#
+ 	</select>
+ 	
+ 	<select id="selectAppCodeKey" resultClass="String">
+ 		SELECT 'AP'||LPAD(APP_SEQ.NEXTVAL,6,'0') AS app_code_key FROM DUAL
+ 	</select>
+ 	
+ 	<insert id="semisaveRequest" parameterClass="java.util.Map">
+		INSERT ALL
+		INTO REQ_TAB
+			  (REQ_CODE
+			  ,APP_CODE
+			  ,REQ_DATE
+			  ,REQ_TEAM
+			  ,REQ_LEVEL
+			  ,REQ_NAME
+		      ,REQ_TITLE
+		      ,REQ_CONTENTS
+		      ,FIR_REG_DAY
+		      ,FIR_REG)
+		VALUES
+			  ('RE'||LPAD(REQ_SEQ.NEXTVAL,6,'0')
+			  ,#app_code_key#
+			  ,REPLACE(#REQ_DATE#, '/')
+			  ,#REQ_TEAM#
+			  ,#REQ_LEVEL#
+			  ,#REQ_NAME#
+			  ,#REQ_TITLE#
+			  ,#REQ_CONTENTS#
+			  ,TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+			  ,'system')
+		  
+		  INTO APP_TAB
+			  (APP_CODE
+		      ,APP_STATE
+		      ,APP_DATE
+		      ,APP_DAM
+		      ,APP_TEAM
+		      ,APP_EXECUTIVE
+		      ,APP_MASTER
+		      ,FIR_REG_DAY
+		      ,FIR_REG
+		      ,MEM_CODE)
+		VALUES 
+				(#app_code_key#
+				,'0'
+				,#APP_DATE#
+				,#APP_DAM#
+				,#APP_TEAM#
+				,#APP_EXECUTIVE#
+				,#APP_MASTER#
+				,TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+				,#FIR_REG#
+				,#MEM_CODE#)
+		SELECT * FROM DUAL
+ 	</insert>
+ 	
+ 	<insert id="saveRequest" parameterClass="java.util.Map">
+		INSERT ALL
+		INTO REQ_TAB
+			  (REQ_CODE
+			  ,APP_CODE
+			  ,REQ_DATE
+			  ,REQ_TEAM
+			  ,REQ_LEVEL
+			  ,REQ_NAME
+		      ,REQ_TITLE
+		      ,REQ_CONTENTS
+		      ,FIR_REG_DAY
+		      ,FIR_REG)
+		VALUES
+			  ('RE'||LPAD(REQ_SEQ.NEXTVAL,6,'0')
+			  ,#app_code_key#
+			  ,REPLACE(#REQ_DATE#, '/')
+			  ,#REQ_TEAM#
+			  ,#REQ_LEVEL#
+			  ,#REQ_NAME#
+			  ,#REQ_TITLE#
+			  ,#REQ_CONTENTS#
+			  ,TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+			  ,'system')
+		  
+		  INTO APP_TAB
+			  (APP_CODE
+		      ,APP_STATE
+		      ,APP_DATE
+		      ,APP_DAM
+		      ,APP_TEAM
+		      ,APP_EXECUTIVE
+		      ,APP_MASTER
+		      ,FIR_REG_DAY
+		      ,FIR_REG
+		      ,MEM_CODE)
+		VALUES 
+				(#app_code_key#
+				,'1'
+				,#APP_DATE#
+				,#APP_DAM#
+				,#APP_TEAM#
+				,#APP_EXECUTIVE#
+				,#APP_MASTER#
+				,TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+				,#FIR_REG#
+				,#MEM_CODE#)
+		SELECT * FROM DUAL
+ 	</insert>
+ 	
+ 	<update id="updateRequest" parameterClass="java.util.Map"> 	
+		UPDATE REQ_TAB 
+			 SET REQ_TITLE		= #REQ_TITLE#
+				,REQ_CONTENTS 	= #REQ_CONTENTS#
+				,LAT_REG     	= '00000000'
+  				,LAT_REG_DAY	= TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+			WHERE 1=1
+			<isNotEmpty property="REQ_CODE" prepend="">
+					AND REQ_CODE = #REQ_CODE#
+			</isNotEmpty>
+			
+ 	</update>
+ 	
+ 	<update id="updateRequest2" parameterClass="java.util.Map"> 	
+		UPDATE APP_TAB 
+			 SET APP_DAM		= #APP_DAM#
+				,APP_TEAM	 	= #APP_TEAM#
+				,APP_EXECUTIVE	= #APP_EXECUTIVE#
+				,APP_MASTER  	= #APP_MASTER#
+				,LAT_REG     	= '00000000'
+  				,LAT_REG_DAY	= TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+			WHERE 1=1
+			<isNotEmpty property="APP_CODE" prepend="">
+				AND APP_CODE = #APP_CODE#
+			</isNotEmpty>
+ 	</update>
+</sqlMap>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace = "Sidemenu">
+
+	
+	<typeAlias alias="Sidemenu" type="com.wavem.convergence.common.vo.SidemenuVo"/>
+	
+	<select id = "selectSidemenu" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		WITH SIDE_MENU AS
+		 (SELECT LEVEL AS DEP_LEVEL
+		        ,DEP_NAME
+		        ,DEP_CODE
+		    FROM DEP_TAB A
+		   WHERE 1 = 1
+		     AND DESTRUCTION_DAY IS NULL
+		   START WITH UPPER_DEP = '00000001'
+		  CONNECT BY UPPER_DEP = PRIOR DEP_CODE)
+		  
+		SELECT TO_CHAR(DEP_LEVEL) AS DEP_LEVEL
+		      ,DEP_NAME
+		      ,DEP_CODE
+		      ,(SELECT TO_CHAR(MAX(DEP_LEVEL)) FROM SIDE_MENU) AS MAX_LVL
+		  FROM SIDE_MENU
+	</select>
+</sqlMap>

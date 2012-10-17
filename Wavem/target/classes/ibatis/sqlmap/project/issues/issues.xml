@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Issues">
+
+	<select id="selectIssues" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT A.ISS_CODE, 
+		       A.PRO_CODE, 
+		       B.PRO_NAME, 
+		       A.TITLE, 
+		       A.CONTENTS, 
+		       A.MEM_CODE, 
+		       C.MEM_NAME, 
+		       A.DEP_CODE, 
+		       D.DEP_NAME, 
+		       A.FIR_REG, 
+		       E.MEM_NAME AS FIR_REG_NAME, 
+		       A.FIR_REG_DAY 
+		  FROM ISS_TAB A, 
+		       PRO_TAB B, 
+		       MEM_TAB C, 
+		       DEP_TAB D, 
+		       MEM_TAB E 
+		 WHERE 1 = 1 
+		       AND A.PRO_CODE = B.PRO_CODE 
+		       AND A.MEM_CODE = C.MEM_CODE 
+		       AND A.DEP_CODE = D.DEP_CODE 
+		       AND A.FIR_REG = E.MEM_CODE
+		       <isEqual property="search" compareValue="issDetail" prepend="">
+				    /*상세보기용 코드*/
+					AND  A.ISS_CODE = #search_value#
+				</isEqual>
+	</select>
+	
+	<insert id="saveIssues">
+		INSERT INTO ISS_TAB 
+		       ( 
+		           ISS_CODE, 
+		           PRO_CODE, 
+		           TITLE, 
+		           CONTENTS, 
+		           MEM_CODE, 
+		           DEP_CODE, 
+		           FIR_REG, 
+		           FIR_REG_DAY, 
+		           LAT_REG, 
+		           LAT_REG_DAY 
+		       ) 
+		       VALUES 
+		       ( 
+		       	 (SELECT TRIM(TO_CHAR(NVL(COUNT(ISS_CODE), 0) + 1, '00000000'))
+     				FROM ISS_TAB),
+		           #pro_code#, 
+		           #title#, 
+		           #issues_content#, 
+		           #mem_code#, 
+		           (SELECT B.DEP_CODE
+					  FROM PRO_TAB A
+					      ,DEP_TAB B
+					 WHERE A.DEP_CODE = B.DEP_CODE
+					 and a.pro_code = #pro_code#), 
+		           '00000001', 
+		           TO_CHAR( SYSDATE, 'YYYYMMDDHH24MISS' ), 
+		           '00000001', 
+		           TO_CHAR( SYSDATE, 'YYYYMMDDHH24MISS' ) 
+		       )  
+	</insert>
+	
+	<select id="searchIssues" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT A.ISS_CODE, 
+		       A.PRO_CODE, 
+		       B.PRO_NAME, 
+		       A.TITLE, 
+		       A.CONTENTS, 
+		       A.MEM_CODE, 
+		       C.MEM_NAME, 
+		       A.DEP_CODE, 
+		       D.DEP_NAME, 
+		       A.FIR_REG, 
+		       E.MEM_NAME AS FIR_REG_NAME, 
+		       A.FIR_REG_DAY
+		        
+		  FROM ISS_TAB A, 
+		       PRO_TAB B, 
+		       MEM_TAB C, 
+		       DEP_TAB D, 
+		       MEM_TAB E 
+		 WHERE 1 = 1 
+		       AND A.PRO_CODE = B.PRO_CODE 
+		       AND A.MEM_CODE = C.MEM_CODE 
+		       AND A.DEP_CODE = D.DEP_CODE 
+		       AND A.FIR_REG = E.MEM_CODE
+		<isEqual property="search" compareValue="title"  prepend="">
+		   AND A.TITLE LIKE '%'||#search_value#||'%'
+		</isEqual>
+		<isEqual property="search" compareValue="writer" prepend="">
+		   AND C.MEM_NAME = #search_value#
+		</isEqual>
+		<isEqual property="search" compareValue="depname" prepend="">
+		   AND D.DEP_NAME LIKE '%'||#search_value#||'%'
+		</isEqual>
+	</select>
+	
+	<update id="updateIssues">
+		UPDATE ISS_TAB
+		   SET TITLE         = #title#
+		   	  ,PRO_CODE      = #pro_code#
+		   	  ,MEM_CODE      = #mem_code#
+		   	  ,CONTENTS      = #issues_content#
+		   	  ,LAT_REG_DAY   = TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+		      ,LAT_REG       = #userMC#
+		 WHERE ISS_CODE      = #param_iss_code#
+	</update>
+</sqlMap>

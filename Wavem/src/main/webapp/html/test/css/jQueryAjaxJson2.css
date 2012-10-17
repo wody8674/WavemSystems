@@ -1,0 +1,9 @@
+@CHARSET "UTF-8";
+
+#nonSubmit {
+	display: none;
+}
+
+p {
+	display: none;
+}

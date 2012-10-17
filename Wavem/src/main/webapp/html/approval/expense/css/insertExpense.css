@@ -1,0 +1,91 @@
+@CHARSET "utf-8";
+/* 바디 */
+body {
+	/* border: 1px solid #ccc; */
+	width: 940px; 
+	height:450px; 
+	background: #f2f2f2;
+	}
+
+#wrapper{
+	/* border: 1px solid #ccc; */
+	width:940px; 
+	height:450px; 
+	}
+#lefttop{
+	/* border: 1px solid #ccc; */
+	float:left;  
+	margin-left:40px; 
+	margin-top:20px;
+	text-align:center; 
+	width:380px;
+	}
+#righttop{
+	/* border: 1px solid #ccc; */
+	float:right; 
+	margin-top:10px;
+	width:470px;
+	}
+
+#main{
+	/* border: 1px solid #ccc; */
+	align:center; 
+	width:920px;
+	margin-left:20px;
+	height:70px;
+	/* margin-bottom:10px; */
+	}
+	
+#main2{
+ 	/* border: 1px solid #ccc; */
+	align:center;
+	width:920px;
+	margin-left:20px;
+	height:30px;
+}
+#contents{
+ 	/* border: 1px solid #ccc;  */
+	align:center;
+	width:920px;
+	margin-left:20px;
+	height:100px;
+}
+#myTable{
+	/* border: 1px solid #ccc; */
+	/* margin-top:15px; */
+	align:center;
+	width:920px;
+	/* margin-left:20px; */
+	height:80px;
+}
+#text{
+	float:left;
+}
+#btn{
+	float:right;
+}
+
+#exp_rollback_reason{
+	align:center;
+	width:920px;
+	margin-left:20px;
+	height:75px;
+}
+
+
+#bottom{
+	/* border: 1px solid #ccc; */
+	align:center;
+	width:920px;
+	margin-left:20px;
+	height:50px;
+}
+#logo{
+	/* border: 1px solid #ccc; */
+	float:left;
+}
+#button{
+	/* border: 1px solid #ccc; */
+	float:right;
+	margin-top:15px;
+}

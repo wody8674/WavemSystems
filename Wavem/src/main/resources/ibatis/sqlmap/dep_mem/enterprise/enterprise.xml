@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Enterprise">
+
+	<select id="searchEnterprise" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+ 		SELECT ENT_CODE
+    		     ,ENT_NAME
+    		     ,ENT_HEAD
+    		     ,ENT_NO
+    		     ,NVL(ADDRESS, ' ') AS ADDRESS
+    		     ,NVL(TEL, ' ') AS TEL
+    		     ,TO_CHAR(TO_DATE(CREATION_DAY, 'YYYY/MM/DD'), 'yyyy/mm/dd') AS CREATION_DAY
+    		     ,NVL(TO_CHAR(TO_DATE(DESTRUCTION_DAY, 'YYYY/MM/DD'), 'yyyy/mm/dd'), ' ') AS DESTRUCTION_DAY
+    		     ,FIR_REG
+    		     ,FIR_REG_DAY
+    		     ,LAT_REG
+    		     ,LAT_REG_DAY
+    		     ,NVL(ETC, ' ') AS ETC
+		FROM ENT_TAB A
+		WHERE 1=1
+				<isNotEmpty property="dep_code_value">
+					AND DEP_CODE LIKE '%'||#dep_code_value#||'%'
+				</isNotEmpty>
+ 	</select>
+ 	
+ 	<insert id="saveEnterprise">
+ 		INSERT INTO ENT_TAB
+				(ENT_CODE
+				,ENT_NAME
+				,ENT_HEAD
+				,ENT_NO
+				,ADDRESS
+				,TEL
+				,CREATION_DAY
+				,DESTRUCTION_DAY
+				,FIR_REG
+				,FIR_REG_DAY
+				,LAT_REG
+				,LAT_REG_DAY
+				,ETC)
+		VALUES
+				(#ent_code#
+				,#ent_name#
+				,#ent_head#
+				,#ent_no#
+				,#address#
+				,#tel#
+				,REPLACE(#creation_day#, '/')
+				,REPLACE(#destruction_day#, '/')
+				,'00000001'
+				,TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+				,'00000001'
+				,TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+				,#etc#)
+ 	</insert>
+</sqlMap>

@@ -1,0 +1,197 @@
+@CHARSET "UTF-8";
+<style type="text/css">
+<!-- 공통 -->
+* { 
+	font-size: 20px;
+	font-family: 맑은 고딕;
+	width:1300px;
+	color: #039;
+}
+
+body { 
+	margin: 0 auto; 
+	width: 1300px; 
+	height: 900px;
+	font-family: 맑은 고딕;
+	background: #f2f2f2;
+}
+
+#header { 
+	margin: 5px auto 0 auto; 
+	background-color: #404040; 
+	width: 1300px; 
+	height: 150px;
+	font-family: 맑은 고딕;
+	font-size : 15px;
+	color: #FFFFFF;
+}
+
+#hd{
+	margin: 5px auto 0 auto; 
+	background-color: #404040; 
+	width: 1300px; 
+	height: 120px;
+	font-family: 맑은 고딕;
+	font-size : 15px;
+	color: #FFFFFF;
+}
+
+/* #hd-left{
+	width:170px;
+	float:left;
+	margin-left:10px;
+}
+
+#hd-right{
+	float:right;
+	margin-top:80px;
+	margin-right:275px;
+} */
+
+
+#page {
+	width: 1300px;
+	height: 85%;
+	margin: 5px auto 0 auto; 
+	border: 1px solid #DCDCDC; 
+	background-color: #F8F8FF;
+}
+
+
+#group{
+	width:1300px;
+	height:100%
+}
+
+#group1 {
+	width: 180px;
+	height: 100%;
+	float:left;
+	font-family: 맑은 고딕;
+}
+
+#group2 {
+	width: 1080px ;
+	height: 100%;
+	float:right;
+	margin-right: 10px;
+	font-family: 맑은 고딕;
+}
+
+#list {
+	font-family: 맑은 고딕;
+	height: 96%;
+	width: 100%;
+	line-height: 150%;
+	border-right: 1px solid #000000;
+}
+
+div .mainDiv {
+	overflow-y: scroll;
+	height: 600px;
+}
+
+footer { 
+	height:5%;
+	color:#FFFFFF;
+	margin: 5px auto 0 auto; 
+	background-color: #404040; 
+	text-align:center;
+}
+
+<!-- 메뉴 -->
+#globalNavi	{ 
+	height: 28px; 
+	padding-top: 7px; 
+	text-align: right; 
+}
+
+#nav { 
+	width: 1000px; 
+	margin: 0 auto; 
+	position: relative; 
+	line-height:2; 
+	text-align: left; 
+}
+
+#nav li { 
+	list-style: none; 
+	float: left; 
+	position: relative; 
+	margin-right: 100px; 
+}
+
+#nav ul { 
+	display: none; 
+	position: absolute; 
+	top: 29px; 
+	left: 0; 
+}
+
+* html #nav ul { 
+	line-height: 0; 
+}
+
+#nav ul li { 
+	float: none; 
+}
+
+#nav ul { 
+	width: 200px; 
+}
+
+#nav ul ul { 
+	margin: 0 auto;  
+}
+
+#nav ul a { 
+	display: block;
+	width: 150px;
+	background:#121212;
+	padding: 6px;
+	color: #FFF;
+	border-bottom: 1px solid #FFF;
+	opacity: 0.9;
+	filter: alpha(opacity=90);
+	zoom: 1;
+	line-height: 1;
+	margin-right: 30px; 
+	text-decoration:none;
+}
+
+#nav ul a.hover { 
+	background: #444; 
+}
+
+<!-- 테이블 공통 -->
+.tab_class-a
+{
+	font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+	font-size: 12px;
+	margin: 5px;
+	text-align: left;
+	border-collapse: collapse;
+	border: 1px solid #69c;
+	width: 80%;
+}
+.tab_class-a th
+{
+	padding: 12px 17px 12px 17px;
+	font-weight: normal;
+	font-size: 14px;
+	/* color: #039; */
+	background-color:#ececec;
+	border-bottom: 1px dashed #69c;
+}
+.tab_class-a td
+{
+	padding: 7px 17px 7px 17px;
+	/* color: #669; */
+}
+.tab_class-a tbody tr:hover td
+{
+	/* color: #339; */
+	background: #d0dafd;
+}
+
+.tab_class-b

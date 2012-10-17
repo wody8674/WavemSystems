@@ -1,0 +1,108 @@
+@CHARSET "utf-8";
+/* 바디 */
+body {
+ 	/* border: 1px solid #ccc; */ 
+	width: 900px; 
+	height:680px; 
+	background: #f2f2f2;
+	}
+
+#wrapper{
+ /* 	border: 1px solid #ccc;  */
+	width:900px; 
+	height:680px; 
+	}
+#lefttop{
+	/* border: 1px solid #ccc; */
+	float:left;  
+	margin-left:20px; 
+	margin-top:30px;
+	text-align:center; 
+	width:380px;
+	}
+#righttop{
+	/* border: 1px solid #ccc; */
+	float:right; 
+	margin-top:10px;
+	width:470px;
+	}
+
+#main{
+/* 	border: 1px solid #ccc; */
+	align:center; 
+	width:870px;
+	margin-left:20px;
+	height:63px;
+	/* margin-bottom:10px; */
+	}
+	
+#main2{
+/* 	border: 1px solid #ccc; */
+	align:center;
+	width:870px;
+	margin-left:20px;
+	height:30px;
+}
+#kind{
+/* 	border: 1px solid #ccc; */
+	align:center;
+	width:870px;
+	margin-left:20px;
+	height:30px;
+}
+
+#project{
+	/* border: 1px solid #ccc; */
+	align:center;
+	width:870px;
+	margin-left:20px;
+	height:30px;
+}
+
+#work_date{
+	/* border: 1px solid #ccc; */
+	align:center;
+	width:870px;
+	margin-left:20px;
+	height:30px;
+}
+
+#time{
+	/* border: 1px solid #ccc; */
+	align:center;
+	width:870px;
+	margin-left:20px;
+	height:50px;
+}
+
+#reason{
+	/* border: 1px solid #ccc; */
+	align:center;
+	width:870px;
+	margin-left:20px;
+	height:90px;
+}
+
+#nig_rollback_reason{
+	align:center;
+	width:870px;
+	margin-left:20px;
+	height:75px;
+}
+
+#bottom{
+	/* border: 1px solid #ccc; */
+	align:center;
+	width:870px;
+	margin-left:20px;
+	height:50px;
+}
+#logo{
+	/* border: 1px solid #ccc; */
+	float:left;
+}
+#button{
+	/* border: 1px solid #ccc; */
+	float:right;
+	margin-top:15px;
+}

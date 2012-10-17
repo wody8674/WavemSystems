@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Etc">
+	
+	<insert id="saveEtcDetail">
+		INSERT 
+		  INTO BOA_TAB 
+		       ( 
+		           BOA_CODE, 
+		           BOA_TYPE, 
+		           MEM_CODE, 
+		           TITLE, 
+		           CONTENTS, 
+		           FIR_REG_DAY, 
+		           FIR_REG 
+		       ) 
+		       VALUES 
+		       ( 
+	              (SELECT TRIM(TO_CHAR(SYSDATE, 'YYYYMMDD') || TRIM(TO_CHAR(TRIM(NVL(COUNT(BOA_CODE), 0) + 1), '0000'))) 
+	                FROM BOA_TAB
+	              ), 
+	              'ET000', 
+	              TRIM(#user_mc#), 
+	              #etc_title#, 
+	              #etc_content#,
+	              TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS'),
+	              TRIM(#user_mc#) 
+	          ) 
+	</insert>
+	
+	<update id="updateEtcDetail">
+		UPDATE BOA_TAB 
+		   SET TITLE = #etc_title#, 
+		       CONTENTS = #etc_title#, 
+		       LAT_REG = TRIM(#user_mc#), 
+		       LAT_REG_DAY = TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+		 WHERE 1 = 1
+		   AND BOA_CODE = #boa_code#
+		   AND BOA_TYPE = 'ET000'
+	</update>
+	
+	<select id="searchEtc" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT A.BOA_CODE, 
+		       A.BOA_TYPE, 
+		       A.MEM_CODE, 
+		       B.MEM_NAME, 
+		       A.TITLE, 
+		       A.CONTENTS, 
+		       A.FIR_REG, 
+		       TO_CHAR(TO_DATE(SUBSTR(TRIM(A.FIR_REG_DAY), 0, 8), 'YYYY/MM/DD'), 'YYYY/MM/DD') AS FIR_REG_DAY 
+		  FROM BOA_TAB A, 
+		       MEM_TAB B 
+		 WHERE 1 = 1 
+		       AND A.MEM_CODE = B.MEM_CODE 
+		       AND A.BOA_TYPE = 'ET000'
+		       <isNotEmpty property="boa_code">
+		       AND A.BOA_CODE = #boa_code#
+		       </isNotEmpty>
+		       		       
+		       <isNotEmpty property="search_gubun">
+			       <isEqual property="search_gubun" compareValue="title">
+				       <isNotEmpty property="search_gubun_content">
+				       AND A.TITLE LIKE '%' || #search_gubun_content# || '%'
+				       </isNotEmpty>  
+			       </isEqual>
+			       <isEqual property="search_gubun" compareValue="writer">
+				       <isNotEmpty property="search_gubun_content">
+				       AND A.CONTENTS LIKE '%' || #search_gubun_content# || '%'
+				       </isNotEmpty>  
+			       </isEqual>
+		       </isNotEmpty>
+	  ORDER BY A.BOA_CODE
+	</select>
+</sqlMap>		

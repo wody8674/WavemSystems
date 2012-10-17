@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Member">
+	
+ 	<select id="searchMember" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+ 		SELECT MEM_CODE
+ 				 ,DEP_CODE
+		    	 ,NVL((SELECT C.ENT_NAME
+          	   		FROM ENT_TAB C
+         	 	   WHERE 1 = 1
+           		 	   AND A.ENT_CODE = C.ENT_CODE), ' ') AS ENT_NAME
+		    	 ,MEM_NAME
+		    	 ,MEM_ID
+		    	 ,MEM_POST
+		    	 ,NVL((SELECT B.NAME_1
+		      	    FROM COM_COD B
+		      	   WHERE 1 = 1
+		        	   AND A.MEM_POST = B.COM_GROUP || B.COM_CODE), ' ') AS MEM_POST_NM
+		   		 ,CON_TYPE
+		    	 ,NVL((SELECT B.NAME_1
+		       		FROM COM_COD B
+		      	   WHERE 1 = 1
+		         	   AND A.CON_TYPE = B.COM_GROUP || B.COM_CODE), ' ') AS CON_COD_NM
+		    	 ,NVL(TO_CHAR(TO_DATE(TRIM(HIRED_DAY), 'YYYY/MM/DD'), 'yyyy/mm/dd'), ' ') AS HIRED_DAY
+		    	 ,NVL(TO_CHAR(TO_DATE(TRIM(RETIRE_DAY), 'YYYY/MM/DD'), 'yyyy/mm/dd'), ' ') AS RETIRE_DAY
+		    	 ,PASSWORD
+		    	 ,NVL(HP, ' ') AS HP
+		    	 ,NVL(TEL, ' ') AS TEL
+		    	 ,NVL(ADDRESS, ' ') AS ADDRESS
+		    	 ,NVL(TO_CHAR(TO_DATE(TRIM(BIRTHDAY), 'YYYY/MM/DD'), 'yyyy/mm/dd'), ' ') AS BIRTHDAY
+		    	 ,NVL(TO_CHAR(TO_DATE(TRIM(SPECIAL_DAY), 'YYYY/MM/DD'), 'yyyy/mm/dd'), ' ') AS SPECIAL_DAY
+		    	 ,NVL(MAIL, ' ') AS MAIL
+		    	 ,NVL(MESSENGER, ' ') AS MESSENGER
+		    	 ,FIR_REG
+		    	 ,FIR_REG_DAY
+		    	 ,LAT_REG
+		    	 ,LAT_REG_DAY
+		    	 ,A.USE_CHECK
+ 		FROM MEM_TAB A		
+	   WHERE 1=1
+	   		AND MEM_CODE != 'S0000000'
+				<isEqual property="search_menu" compareValue="mem_id"  prepend="">
+					AND MEM_ID LIKE '%'||#search_value#||'%'
+				</isEqual>
+				<isEqual property="search_menu" compareValue="mem_code" prepend="">
+					AND MEM_CODE LIKE '%'||#search_value#||'%'
+				</isEqual>
+				<isEqual property="search_menu" compareValue="mem_name" prepend="">
+					AND MEM_NAME LIKE '%'||#search_value#||'%'
+				</isEqual>
+				<isNotEmpty property="dep_code_value">
+					AND DEP_CODE LIKE '%'||#dep_code_value#||'%'
+				</isNotEmpty>
+				<isEqual property="search_menu" compareValue="mem_info" prepend="">
+					AND A.MEM_CODE = #search_value#
+				</isEqual>
+				<isNotEmpty property="mem_post" prepend="">
+					AND MEM_POST = #mem_post#
+				</isNotEmpty>
+				<isNotEmpty property="con_type" prepend="">
+					AND CON_TYPE = #con_type#
+				</isNotEmpty>
+ 	</select>
+ 	
+	<insert id="saveMember">
+		INSERT INTO MEM_TAB
+			  (MEM_CODE
+			  ,DEP_CODE
+			  ,ENT_CODE
+			  ,MEM_NAME
+			  ,MEM_ID
+			  ,MEM_POST
+			  ,CON_TYPE
+			  ,HIRED_DAY
+			  ,RETIRE_DAY
+			  ,PASSWORD
+			  ,HP
+			  ,TEL
+			  ,ADDRESS
+			  ,BIRTHDAY
+			  ,SPECIAL_DAY
+			  ,MAIL
+			  ,MESSENGER
+			  ,FIR_REG
+			  ,FIR_REG_DAY
+			  ,LAT_REG
+			  ,LAT_REG_DAY
+			  ,USE_CHECK)
+		VALUES
+			  ((SELECT LPAD(NVL(MAX(TO_NUMBER(MEM_CODE)), 0) + 1, 8, '0') FROM MEM_TAB  WHERE MEM_CODE != 'S0000000')
+			  ,#dep_code#
+			  ,#ent_code#
+			  ,#mem_name#
+			  ,#mem_id#
+			  ,#mem_post#
+			  ,#con_type#
+			  ,REPLACE(TRIM(#hired_day#), '/')
+			  ,REPLACE(TRIM(#retire_day#), '/')
+			  ,#password#
+			  ,#hp#
+			  ,#tel#
+			  ,#address#
+			  ,REPLACE(TRIM(#birthday#), '/')
+			  ,REPLACE(TRIM(#special_day#), '/')
+			  ,#mail#
+			  ,#messenger#
+			  ,#user_mc#
+			  ,TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+			  ,#user_mc#
+			  ,TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+			  ,'1')
+ 	</insert>
+					
+ 	<update id="updateMember" parameterClass="java.util.Map"> 	
+		UPDATE MEM_TAB
+			 SET DEP_CODE    	= #dep_code#
+				  ,MEM_NAME 	= #mem_name#
+				  ,MEM_POST  	= #mem_post#
+				  ,CON_TYPE   	= #con_type#
+				  ,HIRED_DAY	= REPLACE(TRIM(#hired_day#), '/')
+				  ,RETIRE_DAY  	= REPLACE(TRIM(#retire_day#), '/')
+				  ,PASSWORD  	= #password#
+				  ,HP          	= #hp#
+				  ,TEL       	  	= #tel#
+				  ,ADDRESS     	= #address#
+				  ,BIRTHDAY    	= REPLACE(TRIM(#birthday#), '/')
+				  ,SPECIAL_DAY = REPLACE(TRIM(#special_day#), '/')
+				  ,MAIL        	= #mail#
+				  ,MESSENGER 	= #messenger#
+				  ,LAT_REG     	= #user_mc#
+				  ,LAT_REG_DAY	= TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+		WHERE MEM_CODE = #mem_code#
+ 	</update>
+ 	
+ 	<select id="searchHead" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+ 		SELECT DEP_CODE
+ 				 ,(SELECT COUNT(*)
+  		 			FROM DEP_TAB
+ 				   WHERE 1 = 1
+ 				   <isNotEmpty property="param1" prepend="">
+ 				      AND DEP_HEAD = #param1#
+   				   </isNotEmpty>) AS CNT
+   		  FROM DEP_TAB
+   		WHERE DEP_CODE = '00000001'
+ 	</select>
+ 	
+</sqlMap>

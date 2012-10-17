@@ -1,0 +1,12 @@
+@CHARSET "UTF-8";
+
+.tab_class-a
+{
+	font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+	font-size: 12px;
+	margin-bottom: 5px;
+	text-align: left;
+	border-collapse: collapse;
+	border: 1px solid gray;
+	width: 100%;
+}

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Equipment">
+	
+ 	<select id="searchEquipment" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+ 		SELECT A.EQU_CODE
+     			 ,A.SERIAL_NO
+     			 ,A.EQU_TYPE
+     			 ,(SELECT D.NAME_1
+     	 			FROM COM_COD D
+        		   WHERE 1 = 1
+          			  AND A.EQU_TYPE = D.COM_GROUP || D.COM_CODE) AS EQU_TYPE_NM
+      			,A.USE_TYPE
+      			,(SELECT D.NAME_1
+          		   FROM COM_COD D
+          		  WHERE 1 = 1
+          		     AND A.USE_TYPE = D.COM_GROUP || D.COM_CODE) AS USE_TYPE_NM
+      			,A.EQU_NAME
+      			,A.MANUFACTURER
+      			,TO_CHAR(TO_DATE(A.SALE_DAY, 'YYYY/MM/DD'), 'yyyy/mm/dd') AS SALE_DAY
+      			,B.MEM_CODE
+      			,NVL((SELECT C.MEM_NAME FROM MEM_TAB C WHERE B.MEM_CODE =C.MEM_CODE), '공동소유')  AS MEM_NAME
+      			,(SELECT C.MEM_POST FROM MEM_TAB C WHERE B.MEM_CODE = C.MEM_CODE) AS MEM_POST
+      			,(SELECT C.DEP_CODE FROM MEM_TAB C WHERE B.MEM_CODE = C.MEM_CODE) AS DEP_CODE
+		FROM EQU_TAB A
+      			,MEM_EQU B
+ 	   WHERE 1 = 1
+   		  AND A.EQU_CODE = B.EQU_CODE
+   		  <isEqual property="search_menu" compareValue="mem_name" prepend="">
+   		  		AND NVL((SELECT C.MEM_NAME FROM MEM_TAB C WHERE B.MEM_CODE =C.MEM_CODE), '공동소유') LIKE '%'||#search_value#||'%'
+   		  </isEqual>
+   		  <isEqual property="search_menu" compareValue="equ_name" prepend="">
+   		  		AND EQU_NAME LIKE '%'||#search_value#||'%'
+   		  </isEqual>
+   		  <isEqual property="search_menu" compareValue="manufacturer" prepend="">
+   		  		AND MANUFACTURER LIKE '%'||#search_value#||'%'
+   		  </isEqual>
+   		 <isEqual property="search_menu" compareValue="equ_info" prepend="">
+				AND A.EQU_CODE = #search_value#
+			</isEqual>
+   		  <isNotEmpty property="dep_code_value">
+   		  		AND (SELECT C.DEP_CODE FROM MEM_TAB C WHERE B.MEM_CODE = C.MEM_CODE) = #dep_code_value#
+   		  </isNotEmpty>
+   		  <isNotEmpty property="equ_type" prepend="">
+				AND A.EQU_TYPE = #equ_type#
+		  </isNotEmpty>
+		  <isNotEmpty property="use_type" prepend="">
+				AND A.USE_TYPE = #use_type#
+		  </isNotEmpty>
+ 	</select>
+ 	
+ 	<insert id="saveEquipment2">
+		INSERT ALL INTO EQU_TAB
+  				(EQU_CODE
+				,SERIAL_NO
+				,EQU_TYPE
+				,USE_TYPE
+				,EQU_NAME
+				,MANUFACTURER
+				,SALE_DAY
+				,FIR_REG
+				,FIR_REG_DAY
+				,LAT_REG
+				,LAT_REG_DAY
+				,USE_CHECK)
+		VALUES
+				((SELECT LPAD(NVL(MAX(TO_NUMBER(EQU_CODE)), 0) + 1, 8, '0') FROM EQU_TAB)
+				,#equ_no#
+				,#equ_type#
+				,#use_type#
+				,#equ_name#
+				,#manufacturer#
+				,REPLACE(#sale_day#, '/')
+				,#user_mc#
+			  	,TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+			  	,#user_mc#
+			  	,TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+			  	,'1'	)
+		INTO MEM_EQU
+				(EQU_CODE
+				,DEP_CODE
+				,MEM_CODE
+				,USE_TYPE
+				,LAT_REG
+				,LAT_REG_DAY)
+		VALUES 
+				((SELECT LPAD(NVL(MAX(TO_NUMBER(EQU_CODE)), 0) + 1, 8, '0') FROM EQU_TAB)
+				,(SELECT a.DEP_CODE FROM MEM_TAB a WHERE a.MEM_CODE = #mem_name#)
+				,#mem_name#
+				,#use_type#
+				,#user_mc#
+			  	,TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS'))
+		SELECT *
+		FROM  DUAL
+ 	</insert>
+ 	
+ 	<update id="updateEqu_tab">
+		 UPDATE EQU_TAB
+		 	  SET SERIAL_NO    		= #equ_no#
+				   ,EQU_TYPE    			= #equ_type#
+				   ,USE_TYPE  	 		= #use_type#
+				   ,EQU_NAME     		= #equ_name#
+				   ,MANUFACTURER	= #manufacturer#
+				   ,SALE_DAY     		= REPLACE(#sale_day#, '/')
+				   ,LAT_REG 				= #user_mc#
+				   ,LAT_REG_DAY    	= TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+				   ,USE_CHECK    		= '1'
+		WHERE EQU_CODE = #equ_code#
+ 	</update>
+ 	
+ 	<update id="updateMem_equ">
+ 		UPDATE MEM_EQU
+		 	  SET DEP_CODE 		= #equ_type#
+				   ,MEM_CODE		= #mem_name#
+				   ,USE_TYPE			= #use_type#
+				   ,LAT_REG 			= #user_mc#
+				   ,LAT_REG_DAY	= TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+		WHERE EQU_CODE = #equ_code#
+ 	</update>
+</sqlMap>

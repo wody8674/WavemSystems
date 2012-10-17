@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>계약체결품의서 등록</title>
+<meta charset="UTF-8">
+<link href="../css/insertContract.css" rel="stylesheet" type="text/css"
+	media="screen" />
+<script type="text/javascript"
+	src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script type="text/javascript" src="../js/insertContract.js"></script>
+<!-- <script type="text/javascript" src="../../com/lib/jquery-1.7.1.js"></script> -->
+<script type="text/javascript">
+	var datefield = document.createElement("input")
+	datefield.setAttribute("type", "date")
+	if (datefield.type != "date") { //if browser doesn't support input type="date", load files for jQuery UI Date Picker
+		document
+				.write('<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />\n')
+		/* document.write('<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"><\/script>\n') */
+		document
+				.write('<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"><\/script>\n')
+	}
+</script>
+
+<script>
+	if (datefield.type != "date") { //if browser doesn't support input type="date", initialize date picker widget:
+		jQuery(function($) { //on document.ready
+			$('#CON_DATE').datepicker();
+			$('#CON_START_DATE').datepicker();
+			$('#CON_OVER_DATE').datepicker();
+		})
+	}
+</script>
+</head>
+
+<body>
+	<div id="wrapper">
+		<form id="dataForm" method="post">
+			<div id="top">
+				<div id="topup">
+					<font size=5 face=굴림><h1>
+							<b>계약체결품의</b>
+						</h1></font>
+					<hr>
+				</div>
+				<!-- 결재란 테이블 -->
+				<div id="topdown">
+					<div id="topdownL">
+						</br>
+					</div>
+					<div id="topdownR">
+						<table border=1 width=350 cellspacing=0>
+							<tr>
+								<!-- rowspan으로 열을 합쳐준다 -->
+								<td align="center" rowspan="2" width=30>
+									<h3>
+										결</br> </br>재
+									</h3>
+								</td>
+								<td align="center">
+									<h3>담당</h3>
+								</td>
+								<td align="center">
+									<h3>팀장</h3>
+								</td>
+								<td align="center">
+									<h3>임원</h3>
+								</td>
+								<td align="center">
+									<h3>대표이사</h3>
+								</td>
+							</tr>
+							<tr>
+								<td></br>
+								</br>
+								</br></td>
+								<td></td>
+								<td></td>
+								<td></td>
+							</tr>
+						</table>
+					</div>
+				</div>
+
+
+				<!-- 메인화면 여기선 입력란-->
+
+				<div id="main">
+					<div id="main1">
+						<table border=1 width=800 cellspacing=0>
+							<tr>
+								<td>계약번호</td>
+								<td><input type="text" size=25></td>
+								<td>분류코드</td>
+								<td><input type="text" size=25></td>
+							</tr>
+
+							<tr>
+								<td>계약일자</td>
+								<td><input type="date" id="CON_DATE" name="CON_DATE"></td>
+								<td>담당자</td>
+								<td><input type="text" size=25></td>
+							</tr>
+
+							<tr>
+								<td>계약명</td>
+								<td colspan=3><input type="text" size=25></td>
+							</tr>
+							
+							<tr>
+								<td>계약처</td>
+								<td colspan=3><input type="text" size=25></td>
+							</tr>
+							
+							<tr>
+								<td>계약기간</td>
+								<td colspan=3><input type="date" id="CON_START_DATE" name="CON_START_DATE"> ~ <input type="date" id="CON_OVER_DATE" name="CON_OVER_DATE"> </td>
+							</tr>
+							
+							<tr>
+								<td>결재조건</td>
+								<td colspan=3><input type="text" size=25></td>
+							</tr>
+						</table>
+					</div>
+
+					<div id="main2">
+						<table border=1 width=800 cellspacing=0>
+							<tr>원가분석
+							</tr>
+							<tr>
+								<td>1</td>
+								<td>계약금액(VAT별도)</td>
+								<td><input type="text"></td>
+								<td>매출시기</td>
+								<td colspan=2><input type="text"></td>
+							</tr>
+							<tr>
+								<td>2</td>
+								<td>자재비</td>
+								<td colspan=4><input type="text"></td>
+							</tr>
+							<tr>
+								<td></td>
+								<td>발주업체</td>
+								<td>발주금액</td>
+								<td>발주내용</td>
+								<td>매입시기</td>
+								<td>비고</td>
+							</tr>
+							<tr>
+								<td>1)</td>
+								<td><input type="text"></td>
+								<td><input type="text"></td>
+								<td><input type="text"></td>
+								<td><input type="text"></td>
+								<td><input type="text"></td>
+							</tr>
+						</table>
+					</div>
+
+					<div id="insert">
+						<input type="button" value="추가">
+					</div>
+
+					<div id="main3">
+						<table border=1 width=800 cellspacing=0>
+							<tr>
+								<td>3</td>
+								<td>용역비</td>
+								<td colspan=4><input type="text"></td>
+							</tr>
+							<tr>
+								<td></td>
+								<td>발주업체</td>
+								<td>발주금액</td>
+								<td>발주내용</td>
+								<td>매입시기</td>
+								<td>비고</td>
+							</tr>
+							<tr>
+								<td>1)</td>
+								<td><input type="text"></td>
+								<td><input type="text"></td>
+								<td><input type="text"></td>
+								<td><input type="text"></td>
+								<td><input type="text"></td>
+							</tr>
+						</table>
+					</div>
+
+					<div id="insert">
+						<input type="button" value="추가">
+					</div>
+
+					<div id="main4">
+						<table border=1 width=800 cellspacing=0>
+							<tr>
+								<td>4</td>
+								<td>기타</td>
+								<td><input type="text"></td>
+								<td>각종 부대 비용(계약금액의3%, 교통비, 회의비 등)</td>
+							</tr>
+							<tr>
+								<td>5</td>
+								<td>순이익(1-2-3-4)</td>
+								<td colspan=2><input type="text"></td>
+							</tr>
+							<tr>
+								<td>6</td>
+								<td>이익률(4/1)</td>
+								<td colspan=2><input type="text"></td>
+							</tr>
+							<tr>
+								<td colspan=4>특기사항</td>
+							</tr>
+							<tr>
+								<td colspan=4><textarea rows="3" cols="110"></textarea></td>
+							</tr>
+						</table>
+					</div>
+
+					<div></div>
+
+				</div>
+
+				<div id="bottom">
+					<hr>
+					<div id="logo">
+						<img src="../img/logo.png" height="60" width="120" />
+					</div>
+					<div id="button">
+						<input type=button value="임시저장"> <input id="btnSave"
+							type=button value="등록">
+					</div>
+
+				</div>
+		</form>
+	</div>
+</body>

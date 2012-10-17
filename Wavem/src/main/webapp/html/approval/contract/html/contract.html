@@ -1,0 +1,70 @@
+
+<div id="group2">
+	<table cellspacing=0 cellpadding=0 width="100%">
+		<tr>
+			<h1>계약체결품의서</h1>
+		</tr>
+		<tr>
+			<td align="right">
+				<label name="searchdate">조회일자</label>&nbsp&nbsp
+			</td>
+				
+			<td>
+				<input id="SEARCH_DATE" name="SEARCH_DATE" type="date" value="2012-01-01" />
+			</td>
+				
+			<td>
+				<label name="search">결재상태</label>
+			</td>
+			
+			<td>
+				<!-- 결재상태 선택 -->
+				<select name="state">
+					<option value="결재대기" selected>결재대기
+					<option value="결재처리">결재처리
+					<option value="결재완료">결재완료
+				</select>
+			</td>
+			
+			<td>
+				<!-- 검색방법 선택 -->
+				<select id="search_menu" name="search_menu">
+					<option value="작성자">작성자
+					<option value="제목" selected>제목
+				</select>	
+			</td>
+			
+			<td>
+				<!-- 검색어 입력란 -->
+				<input id="search_value" name="search_value" type="text">
+			</td>
+			
+			<td>
+				<!-- 조회버튼 -->
+				<input id="btnSearch" type=button value="조회">
+				<input id="btnNew" type=button value="등록">
+			</td>
+		</tr>
+	</table>
+	
+	<hr>
+	</br>
+	
+	<div id="contract_info" align="center">
+		<table id=tabContain cellspacing=0 width=100% border=1 align="center">
+			
+			<tr align="center">
+				<td>번호</td>
+				<td>제목</td>
+				<td>등록일</td>
+				<td>작성자</td>
+				<td>상태</td>
+				<td>비고</td>
+			</tr>
+		</table>
+	</div>
+</div>
+
+
+
+

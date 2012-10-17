@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Project">
+	
+ 	<select id="searchProject" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+ 		SELECT * 
+		  FROM 
+		       (SELECT DISTINCT A.PRO_CODE, 
+				       A.DEP_CODE, 
+				       B.DEP_NAME, 
+				       A.PRO_NAME, 
+				       A.PRO_EXPLAIN, 
+				       TO_CHAR(TO_DATE(A.PRO_START_DAY, 'YYYY/MM/DD'), 'yyyy/mm/dd') AS PRO_START_DAY, 
+				       TO_CHAR(TO_DATE(A.PRO_END_DAY, 'YYYY/MM/DD'), 'yyyy/mm/dd') AS PRO_END_DAY, 
+				       A.ORD_ORG, 
+				       A.CON_PRICE, 
+				       A.FIR_REG_DAY, 
+				       A.MEM_CODE, 
+				       D.MEM_NAME,
+				       CEIL((ROW_NUMBER() OVER( ORDER BY A.DEP_CODE DESC)) / 15) PAGENUM, 
+		               CEIL(COUNT( * ) OVER() / 15) TOTALPAGE 
+				  FROM PRO_TAB A, 
+				       DEP_TAB B, 
+				       PRO_PAR C, 
+				       MEM_TAB D 
+				 WHERE 1 = 1 
+				       AND A.DEP_CODE = B.DEP_CODE 
+				       AND A.MEM_CODE = D.MEM_CODE 
+				       AND A.PRO_CODE = C.PRO_CODE(+)
+				<isNotEqual property="user_mc" compareValue="S0000000" prepend="">
+					   AND C.MEM_CODE = #user_mc#
+					   AND C.USE_CHECK = '1'
+				</isNotEqual>
+				<isNotEmpty property="dep_code_value" prepend="">
+					   AND A.DEP_CODE IN (SELECT DEP_CODE
+										   FROM DEP_TAB A
+										  WHERE 1 = 1
+										  START WITH DEP_CODE = #dep_code_value#
+										 CONNECT BY UPPER_DEP = PRIOR DEP_CODE)
+				</isNotEmpty>
+				<isEqual property="search" compareValue="title"  prepend="">
+					   AND A.PRO_NAME LIKE '%'||TRIM(#search_value#)||'%'
+				</isEqual>
+				<isEqual property="search" compareValue="depname" prepend="">
+					   AND B.DEP_NAME LIKE '%'||TRIM(#search_value#)||'%'
+				</isEqual>
+				<isNotEmpty property="startDate" prepend="">
+					<isNotEmpty property="endDate" prepend="">
+						<![CDATA[
+					   AND (A.PRO_START_DAY <= REPLACE(#endDate#, '/')
+					    AND A.PRO_END_DAY >= REPLACE(#startDate#, '/'))
+					   ]]>
+					</isNotEmpty>
+				</isNotEmpty>
+				<isEqual property="search" compareValue="proDetail" prepend="">
+				    /*상세보기용 코드*/
+					AND  A.PRO_CODE = #search_value#
+				</isEqual>
+				ORDER BY FIR_REG_DAY DESC  ) 
+		 WHERE PAGENUM = '1' 
+	</select>
+	
+	<select id="searchProjectPart" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT (SELECT M.MEM_NAME FROM MEM_TAB M WHERE M.MEM_CODE = A.MEM_CODE) AS MEM_NAME
+		      ,MEM_CODE
+		      ,NVL(MAIN_WORK, ' ') AS MAIN_WORK
+		      ,CON_TYPE
+		      ,(SELECT C.NAME_1
+		      	FROM COM_COD C
+		      	WHERE 1 = 1
+		      		AND A.CON_TYPE = C.COM_GROUP || C.COM_CODE) AS CON_COD_NM
+		      ,TO_CHAR(TO_DATE(PRO_START_DAY, 'YYYY/MM/DD'), 'yyyy/mm/dd') AS PRO_START_DAY
+		      ,TO_CHAR(TO_DATE(PRO_END_DAY, 'YYYY/MM/DD'), 'yyyy/mm/dd') AS PRO_END_DAY
+		  FROM PRO_PAR A
+		 WHERE 1 = 1
+		   AND PRO_CODE = #ibatis_proCode#
+		   AND USE_CHECK = '1'
+		 ORDER BY FIR_REG_DAY DESC
+	</select>
+	
+	<select id="selectProjectCode" resultClass="java.lang.String">
+		SELECT 'PR'||LPAD(PRO_SEQ.NEXTVAL,6,'0') AS PRO_CODE FROM DUAL
+	</select>    
+	
+ 	<insert id="saveProject" parameterClass="java.util.Map">
+ 			
+		INSERT INTO PRO_TAB
+		  (PRO_CODE
+		  ,PRO_NAME
+		  ,PRO_EXPLAIN
+		  ,PRO_START_DAY
+		  ,PRO_END_DAY
+		  ,ORD_ORG
+		  ,MEM_CODE
+		  ,DEP_CODE
+		  ,CON_PRICE
+		  ,FIR_REG_DAY
+		  ,FIR_REG)
+		VALUES
+		  (#pro_code_key#
+		  ,#pro_name#
+		  ,#pro_explain#
+		  ,REPLACE(#pro_start_day#, '/')
+		  ,REPLACE(#pro_end_day#, '/')
+		  ,#ord_org#
+		  ,#mem_code#
+		  ,#dep_code#
+		  ,NVL(#con_price#, 0)
+		  ,TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+		  ,#userMC#)		  
+ 	</insert>
+ 	
+ 	<insert id="saveProjectPart">
+		INSERT INTO PRO_PAR
+		  (PRO_CODE
+		  ,MEM_CODE
+		  ,MAIN_WORK
+		  ,CON_TYPE
+		  ,PRO_START_DAY
+		  ,PRO_END_DAY
+		  ,USE_CHECK
+		  ,FIR_REG_DAY
+		  ,FIR_REG
+		  ,LAT_REG_DAY
+		  ,LAT_REG)
+		VALUES
+		  (#pro_code_key#
+		   ,#mem_code#		  	
+		   ,#main_work#
+		   ,#con_type#
+		   ,REPLACE(#pro_start_day#, '/')
+		   ,REPLACE(#pro_end_day#, '/')
+		   ,#use_check#
+		   ,TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+		   ,#userMC#
+		   ,TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+		   ,#userMC#)
+ 	</insert>
+ 	
+	<update id="updateProject">
+		UPDATE PRO_TAB
+		   SET PRO_NAME      = #pro_name#
+		      ,PRO_EXPLAIN   = #pro_explain#
+		      ,PRO_START_DAY = REPLACE(#pro_start_day#, '/')
+		      ,PRO_END_DAY   = REPLACE(#pro_end_day#, '/')
+		      ,ORD_ORG       = #ord_org#
+		      ,DEP_CODE      = #dep_code#
+		      ,CON_PRICE     = NVL(#con_price#, 0)
+		      ,LAT_REG_DAY   = TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+		      ,LAT_REG       = #userMC#
+		 WHERE PRO_CODE = #pro_code_key#
+	</update>
+	
+	<update id="updateProjectPart">
+		UPDATE PRO_PAR
+		   SET USE_CHECK     = #use_check#
+		   	   ,MEM_CODE	 = #mem_code#
+		  	   ,MAIN_WORK    = #main_work#
+		  	   ,CON_TYPE     = #con_type#
+		  	   ,PRO_START_DAY= REPLACE(#pro_start_day#, '/')
+		  	   ,PRO_END_DAY  = REPLACE(#pro_end_day#, '/')
+		      ,LAT_REG_DAY   = TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+		      ,LAT_REG       = #userMC#
+		 WHERE 1 = 1
+		   AND PRO_CODE = #pro_code_key#
+		   AND MEM_CODE = #mem_code#
+	</update>
+</sqlMap>
+	   

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<h1>사용자 조회</h1>
+	
+	<form id="searchIdForm" method="post">
+		<input type="text" id="user_id" name="user_id" value="superuser"/>
+		<input type="button" id="submitBtn" value="검색"/>
+	</form>
+	
+	<p>
+	사용자 ID : <span id="userid"></span> <br />
+	소속 코드    : <span id="assigncd"></span> <br />
+	사용자 이름 : <span id="usernm"></span> <br />
+	직급           : <span id="levelnm"></span> <br />
+	휴대폰 번호 : <span id="hp"></span> <br />
+	e-mail : <span id="email"></span> <br />
+	</p>
+	
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+	<script type="text/javascript" src="js/jQueryAjaxJson.js"></script>
+	
+</body>
+</html>

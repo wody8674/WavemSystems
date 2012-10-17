@@ -1,0 +1,74 @@
+@CHARSET "utf-8";
+/* 바디 */
+body {
+	/* border: 1px solid #ccc; */
+	width: 650px; 
+	height:450px; 
+	background: #f2f2f2;
+	}
+
+#wrapper{
+	/* border: 1px solid #ccc; */
+	width:650px; 
+	height:450px; 
+	}
+#lefttop{
+	/* border: 1px solid #ccc; */
+	float:left;  
+	margin-left:20px; 
+	text-align:center; 
+	width:250px;
+	}
+#righttop{
+	/* border: 1px solid #ccc; */
+	float:right; 
+	margin-top:10px;
+	width:350px;
+	}
+
+#main{
+	/* border: 1px solid #ccc; */
+	align:center; 
+	width:650px;
+	margin-left:20px;
+	height:50px;
+	margin-bottom:10px;
+	}
+	
+#main2{
+	/* border: 1px solid #ccc; */
+	align:center;
+	width:650px;
+	margin-left:20px;
+	height:30px;
+}
+#title{
+	/* border: 1px solid #ccc; */
+	align:center;
+	width:650px;
+	margin-left:20px;
+	height:30px;
+}
+
+#contents{
+	/* border: 1px solid #ccc; */
+	align:center;
+	width:650px;
+	margin-left:20px;
+	height:100px;
+}
+
+#bottom{
+	/* border: 1px solid #ccc; */
+	align:center;
+	width:650px;
+	margin-left:20px;
+	height:50px;
+}
+#logo{
+	float:left;
+}
+#button{
+	float:right;
+	margin-top:15px;
+}

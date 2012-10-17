@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="mainView">
+
+	<!-- 공지사항 -->
+	<select id="selectNotice" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		WITH NOTICE AS
+		(SELECT COM.NAME_1 AS TYPE, 
+		       BOA.TITLE, 
+		       TO_CHAR(TO_DATE(BOA.FIR_REG_DAY, 'YYYYMMDDHH24MISS'), 'YYYY/MM/DD') AS FIR_REG_DAY 
+		  FROM BOA_TAB BOA, 
+		       COM_COD COM 
+		 WHERE 1 = 1 
+		       AND BOA.BOA_TYPE = TRIM((COM.COM_GROUP || COM.COM_CODE)) 
+		       AND SUBSTR(BOA.BOA_TYPE, 0, 2) = 'BA'
+		 ORDER BY BOA.BOA_CODE DESC)
+		
+		SELECT TYPE
+			  ,TITLE
+			  ,FIR_REG_DAY
+			  ,(SELECT COUNT(*) FROM NOTICE) AS CNT
+		  FROM NOTICE
+		 WHERE 1 = 1
+		  <![CDATA[
+		   AND ROWNUM >= 0
+		   AND ROWNUM <= 5
+		  ]]>
+	</select>
+ 
+ 	<!-- 기념일 -->
+	<select id="selectAnniversary" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT MEM_NAME
+		      ,SUBTITLE
+		      ,TO_CHAR(TO_DATE(ANNIVERSARY_DAY, 'YYYYMMDDHH24MISS'), 'yyyy/mm/dd') AS ANNIVERSARY_DAY
+		  FROM (SELECT MEM_NAME
+		<![CDATA[
+		              ,'생일이 ' || ABS(DAY_CNT) || CASE
+		                 WHEN DAY_CNT < 0 THEN
+		                  '일 지났습니다.'
+		                 ELSE
+		                  '일 남았습니다.'
+		               END AS SUBTITLE
+		]]>
+		              ,BIRTHDAY AS ANNIVERSARY_DAY
+		              ,ABS(DAY_CNT) AS DAY_CNT
+		          FROM (SELECT MEM_NAME
+		                      ,BIRTHDAY
+		                      ,TO_DATE(SUBSTR(BIRTHDAY, 5), 'mmdd') -
+		                       TO_DATE(SYSDATE) AS DAY_CNT
+		                  FROM MEM_TAB
+		                 WHERE 1 = 1
+		<isNotEqual property="user_mc" compareValue="S0000000" prepend="">
+		                   AND DEP_CODE = #user_dc#
+		</isNotEqual>
+						)
+		         WHERE 1 = 1
+		<![CDATA[
+		           AND DAY_CNT >= -7
+		           AND DAY_CNT <= 7
+		]]>
+		        UNION ALL
+		        SELECT MEM_NAME
+		<![CDATA[
+		              ,'기념일' || CASE
+		                 WHEN DAY_CNT < 0 THEN
+		                  ' ' || ABS(DAY_CNT) || '일 지났습니다.'
+		                 WHEN DAY_CNT > 0 THEN
+		                  ' ' || ABS(DAY_CNT) || '일 남았습니다.'
+		                 ELSE
+		                  '입니다.'
+		               END AS SUBTITLE
+		]]>
+		              ,SPECIAL_DAY AS ANNIVERSARY_DAY
+		              ,ABS(DAY_CNT) AS DAY_CNT
+		          FROM (SELECT MEM_NAME
+		                      ,SPECIAL_DAY
+		                      ,TO_DATE(SUBSTR(SPECIAL_DAY, 5), 'mmdd') -
+		                       TO_DATE(SYSDATE) AS DAY_CNT
+		                  FROM MEM_TAB
+		                 WHERE 1 = 1
+		<isNotEqual property="user_mc" compareValue="S0000000" prepend="">
+		                   AND DEP_CODE = #user_dc#
+		</isNotEqual>
+						)
+		         WHERE 1 = 1
+		<![CDATA[
+		           AND DAY_CNT >= -7
+		           AND DAY_CNT <= 7
+		]]>
+		        UNION ALL
+		        SELECT MEM_NAME
+		<![CDATA[
+		              ,'입사일 ' || YEAR_CNT || '주년' || CASE
+		                 WHEN DAY_CNT < 0 THEN
+		                  ' ' || ABS(DAY_CNT) || '일 지났습니다.'
+		                 WHEN DAY_CNT > 0 THEN
+		                  ' ' || ABS(DAY_CNT) || '일 남았습니다.'
+		                 ELSE
+		                  '입니다.'
+		               END AS SUBTITLE
+		]]>
+		              ,HIRED_DAY AS ANNIVERSARY_DAY
+		              ,ABS(DAY_CNT) AS DAY_CNT
+		          FROM (SELECT MEM_NAME
+		                      ,HIRED_DAY
+		                      ,TO_DATE(SUBSTR(HIRED_DAY, 5), 'mmdd') -
+		                       TO_DATE(SYSDATE) AS DAY_CNT
+		                      ,TO_CHAR(SYSDATE, 'yyyy') - SUBSTR(HIRED_DAY, 1, 4) AS YEAR_CNT
+		                  FROM MEM_TAB
+		                 WHERE 1 = 1
+		<isNotEqual property="user_mc" compareValue="S0000000" prepend="">
+		                   AND DEP_CODE = #user_dc#
+		</isNotEqual>
+						)
+		         WHERE 1 = 1
+		<![CDATA[
+		           AND DAY_CNT >= -7
+		           AND DAY_CNT <= 7)
+		]]>
+		WHERE 1 = 1
+		<![CDATA[
+		  AND ROWNUM >= 0
+		  AND ROWNUM <= 5
+		]]>
+		 ORDER BY DAY_CNT
+
+	</select>
+	
+	<select id="selectProjectIss" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		WITH PROJECTISS AS
+		(SELECT PRO.PRO_CODE
+		              ,PRO.PRO_NAME
+		              ,ISS.TITLE
+		              ,TO_CHAR(TO_DATE(ISS.FIR_REG_DAY, 'yyyymmddhh24miss')
+		                      ,'yyyy/mm/dd') AS FIR_REG_DAY
+		          FROM ISS_TAB ISS
+		              ,PRO_TAB PRO
+		         WHERE 1 = 1
+		           AND ISS.PRO_CODE = PRO.PRO_CODE
+		<isNotEqual property="user_mc" compareValue="S0000000" prepend="">
+		  		   AND (ISS.MEM_CODE = #user_mc# OR ISS.FIR_REG = #user_mc#)
+		</isNotEqual>
+		         ORDER BY ISS.FIR_REG_DAY DESC)
+		
+		SELECT PRO_CODE
+		      ,PRO_NAME
+		      ,SUBSTR(PRO_NAME, 1, 7)||CASE
+		      							WHEN LENGTH(PRO_NAME) > 7 THEN '...'
+		      							ELSE ''
+		      						  END AS PRO_NAME_THUMNAIL
+		      ,TITLE
+		      ,SUBSTR(TITLE, 1, 20)||CASE
+		      							WHEN LENGTH(TITLE) > 20 THEN '...'
+		      							ELSE ''
+		      						  END AS TITLE_THUMNAIL
+		      ,FIR_REG_DAY
+		      ,(SELECT COUNT(*) FROM PROJECTISS) AS CNT
+		  FROM PROJECTISS
+		 WHERE 1 = 1
+		<![CDATA[
+		   AND ROWNUM >= 0
+		   AND ROWNUM <= 5
+		]]>		
+	</select>
+
+	<select id="selectLibrary" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		WITH LIBRARY AS
+		(SELECT '자료실' AS TYPE, 
+		       TITLE, 
+		       TO_CHAR(TO_DATE(FIR_REG_DAY, 'YYYYMMDDHH24MISS'), 'YYYY/MM/DD') AS FIR_REG_DAY 
+		  FROM BOA_TAB 
+		 WHERE 1 = 1 
+		       AND SUBSTR(BOA_TYPE, 0, 2) = 'ET'
+		<isNotEqual property="user_mc" compareValue="S0000000" prepend="">
+		   		   AND PAR.MEM_CODE = #user_mc#
+		</isNotEqual>
+		ORDER BY BOA_CODE DESC)
+		
+		SELECT TYPE
+			  ,TITLE
+			  ,FIR_REG_DAY
+			  ,(SELECT COUNT(*) FROM LIBRARY) AS CNT
+		  FROM LIBRARY
+		 WHERE 1 = 1
+		  <![CDATA[
+		   AND ROWNUM >= 0
+		   AND ROWNUM <= 5
+		  ]]>
+	</select>
+
+	<select id="selectApproval" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		WITH APP AS
+		 (SELECT APP_CODE
+		        ,APP_STATE
+		        ,APP_DATE
+		        ,APP_DAM
+		        ,APP_TEAM
+		        ,APP_EXECUTIVE
+		        ,APP_MASTER
+		        ,MEM_CODE
+		    FROM APP_TAB
+		   WHERE 1 = 1
+		<isNotEqual property="user_mc" compareValue="S0000000" prepend="">
+		     AND ((APP_DAM = #user_mc#) OR
+		         (APP_TEAM = #user_mc# AND APP_STATE >= '1') OR
+		         (APP_EXECUTIVE = #user_mc# AND APP_STATE >= '2') OR
+		         (APP_MASTER = #user_mc# AND APP_STATE >= '3'))
+		</isNotEqual>
+			)
+			
+		SELECT APP_CODE
+		      ,APPR_CODE
+		      ,APP_STATE
+		      ,DECODE(APP_STATE,'0','임시저장'
+						           ,'1','결재대기'
+						           ,'2','결재처리 중'
+						           ,'3','결재처리 중'
+						           ,'4','결재완료'
+						           ,'결재오류') AS APP_STATE_NM
+		      ,TO_CHAR(TO_DATE(APPR_DATE, 'yyyymmddhh24miss'), 'yyyy/mm/dd') AS APPR_DATE
+		      ,MEM_NAME
+		      ,TITLE
+		      ,SUBSTR(TITLE, 1, 20)|| CASE
+		      							WHEN LENGTH(TITLE) > 20 THEN '...'
+		      							ELSE ''
+		      						  END AS TITLE_THUMBNAIL
+		      ,(SELECT COUNT(*) FROM APP) AS CNT
+		  FROM (SELECT A.APP_CODE
+		              ,B.BRE_CODE AS APPR_CODE
+		              ,A.APP_STATE
+		              ,B.BRE_DATE AS APPR_DATE
+		              ,M.MEM_NAME
+		              ,B.BRE_DATE || ' - 휴가원' AS TITLE
+		          FROM APP     A
+		              ,BRE_TAB B
+		              ,MEM_TAB M
+		         WHERE 1 = 1
+		           AND A.APP_CODE = B.APP_CODE
+		           AND A.MEM_CODE = M.MEM_CODE
+		        UNION ALL
+		        SELECT A.APP_CODE
+		              ,B.NIG_CODE AS APPR_CODE
+		              ,A.APP_STATE
+		              ,B.NIG_DATE AS APPR_DATE
+		              ,M.MEM_NAME
+		              ,B.NIG_DATE || ' - 야근근무서' AS TITLE
+		          FROM APP     A
+		              ,NIG_TAB B
+		              ,MEM_TAB M
+		         WHERE 1 = 1
+		           AND A.APP_CODE = B.APP_CODE
+		           AND A.MEM_CODE = M.MEM_CODE
+		        UNION ALL
+		        SELECT A.APP_CODE
+		              ,B.EXP_CODE AS APPR_CODE
+		              ,A.APP_STATE
+		              ,B.EXP_DATE AS APPR_DATE
+		              ,M.MEM_NAME
+		              ,B.EXP_DATE || ' - 경비사용내역서' AS TITLE
+		          FROM APP     A
+		              ,EXP_TAB B
+		              ,MEM_TAB M
+		         WHERE 1 = 1
+		           AND A.APP_CODE = B.APP_CODE
+		           AND A.MEM_CODE = M.MEM_CODE
+		        UNION ALL
+		        SELECT A.APP_CODE
+		              ,B.REQ_CODE AS APPR_CODE
+		              ,A.APP_STATE
+		              ,B.REQ_DATE AS APPR_DATE
+		              ,M.MEM_NAME
+		              ,B.REQ_DATE || ' - 기안서' AS TITLE
+		          FROM APP     A
+		              ,REQ_TAB B
+		              ,MEM_TAB M
+		         WHERE 1 = 1
+		           AND A.APP_CODE = B.APP_CODE
+		           AND A.MEM_CODE = M.MEM_CODE
+		        UNION ALL
+		        SELECT A.APP_CODE
+		              ,B.CON_CODE AS APPR_CODE
+		              ,A.APP_STATE
+		              ,B.CON_DATE AS APPR_DATE
+		              ,M.MEM_NAME
+		              ,B.CON_DATE || ' - 계약체결품의서' AS TITLE
+		          FROM APP     A
+		              ,CON_TAB B
+		              ,MEM_TAB M
+		         WHERE 1 = 1
+		           AND A.APP_CODE = B.APP_CODE
+		           AND A.MEM_CODE = M.MEM_CODE)
+		 WHERE 1 = 1
+		  <![CDATA[
+		   AND ROWNUM >= 0
+		   AND ROWNUM <= 5
+		  ]]>
+		 ORDER BY APPR_DATE DESC
+	</select>
+<!--  
+ 
+ 
+ 
+-->
+ 
+ 
+</sqlMap>

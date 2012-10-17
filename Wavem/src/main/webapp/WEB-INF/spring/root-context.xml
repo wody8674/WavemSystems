@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+
+	<!-- Root Context: defines shared resources visible to all other web components -->
+
+	<!-- oracle config -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<!-- <property name="driverClassName" value="oracle.jdbc.OracleDriver"/> -->
+		<property name="driverClassName" value="core.log.jdbc.driver.OracleDriver" />
+		<!-- log4sql사용 (쿼리로그) -->
+		<property name="url" value="jdbc:oracle:thin:@beancan.iptime.org:1521/orcl" />
+		<property name="username" value="wavemsystem" />
+		<property name="password" value="wavem" />
+	</bean>
+
+	<!-- transaction config -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+
+	<!-- if Method throw Exception, rollback! -->	
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="*"  propagation="REQUIRED" rollback-for="Exception"/>
+		</tx:attributes>
+	</tx:advice>
+    
+    <!-- Aop setting -->
+	<aop:config>
+		<aop:pointcut id="requiredTx" expression="execution(public * *..*Impl.*(..))"/>
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="requiredTx" />
+	</aop:config>
+
+	<!-- 
+	if do you want Annotaion 
+	 참조 : http://www.egovframe.org/wiki/doku.php?id=egovframework:rte:psl:transaction:declarative_transaction_management
+	 -->
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+
+	<bean id="lobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler" lazy-init="true" />
+
+	<!--<bean id="sqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean"> -->
+	<bean id="sqlMapClient" class="jcf.dao.ibatis.sqlmap.RefreshableSqlMapClientFactoryBean">
+		<property name="configLocation" value="classpath:ibatis/config/sql-map-config.xml" />
+		<property name="dataSource" ref="dataSource" />
+		<property name="lobHandler" ref="lobHandler" />
+		<property name="mappingLocations" value="classpath:ibatis/sqlmap/**/*.xml" />
+		<property name="checkInterval" value="1000" />
+		<!-- jcf.dao.ibatis.sqlmap.RefreshableSqlMapClientFactoryBean 옵션 -> 쿼리 수정 시 1초 후 적용 -->
+	</bean>
+	<bean id="sqlMapClientTemplate" class="org.springframework.orm.ibatis.SqlMapClientTemplate">
+		<property name="sqlMapClient" ref="sqlMapClient" />
+	</bean>
+	
+</beans>

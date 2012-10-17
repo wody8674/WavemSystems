@@ -1,0 +1,114 @@
+@CHARSET "UTF-8";
+<style type="text/css">
+<!--
+* { 
+	text-align: center;
+	font-size: 20px;
+	font-family: 맑은 고딕;
+	width:980px
+}
+body { 
+	margin: 0 auto; 
+	width: 980px; 
+	font-family: 맑은 고딕; 
+	background: #f2f2f2;
+}
+
+header { 
+	margin: 5px auto 0 auto; 
+	background-color: #404040; 
+	width: 980px; 
+	height: 50px;
+	font-family: 맑은 고딕;
+	font-size : 15px;
+	color: #FFFFFF;
+}
+
+nav { 
+	background-color: #404040; 
+	width: 980px; 
+	height: 36px;
+	font-family: 맑은 고딕;
+}
+
+nav ul { 
+	margin: 0 auto; 
+	width: 980px; 
+	list-style: none;
+}
+
+nav ul li { 
+	float: left 
+}
+
+nav ul li a { 
+	display: block; 
+	margin-right: 30px; 
+	width: 100px; 
+	font-size: 16px; 
+	font-weight: bold; 
+	line-height: 44px; 
+	text-align: center; 
+	text-decoration: none; 
+	color: #fff;
+}
+
+#page {
+	width: 980px;
+	height: 660px;
+	margin: 5px auto 0 auto; 
+	border: 1px solid #DCDCDC; 
+	background-color: #F8F8FF;
+}
+
+#group1 {
+	width:600px;
+	float:left;
+}
+
+#board1 {
+	height: 220px;
+	width:600px;
+	font-size: 14px; 
+	font-family: 맑은 고딕;
+}
+
+#board2 {
+	height: 220px;
+	width:600px;
+	font-size: 14px; 
+	font-family: 맑은 고딕;
+}
+
+#board3 {
+	height: 220px;
+	width:600px;
+	font-size: 14px; 
+	font-family: 맑은 고딕;
+}
+
+#group2 {
+	width:380px;
+	float:right;
+}
+
+#board4 {
+	height: 330px;
+	width:380px;
+	font-size: 14px; 
+	font-family: 맑은 고딕;
+}
+
+#board5 {
+	height: 330px;
+	width:380px;
+	font-size: 14px; 
+	font-family: 맑은 고딕;
+}
+
+footer { 
+	color:#FFFFFF;
+	margin: 5px auto 0 auto; 
+	background-color: #404040; 
+	text-align:center;
+}

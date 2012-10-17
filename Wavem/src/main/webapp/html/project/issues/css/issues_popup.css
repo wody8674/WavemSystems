@@ -1,0 +1,32 @@
+@CHARSET "EUC-KR";
+
+#all{
+	width: 680px;
+	height: 480px;
+	float: center;
+	}
+	
+#group1{
+	margin: 3px; 
+	width: 670px;
+	height: 30px;
+}
+
+#group2{
+	margin: 3px; 
+	width: 670px;
+	height: 30px;
+}
+
+#group3{
+	margin: 3px; 
+	width: 670px;
+	height: 30px;
+}
+
+#group4{
+	margin: 7px; 
+	width: 670px;
+	height: 350px;
+}
+

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Department">
+	
+ 	<select id="searchDepartment" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+ 	
+		SELECT * 
+		  FROM 
+		       (SELECT A.DEP_CODE, 
+				       A.DEP_NAME, 
+				       A.DEP_HEAD, 
+				       A.UPPER_DEP, 
+				       NVL ( D.DEP_NAME, ' ' ) AS UPPER_DEP_NM, 
+				       TO_CHAR(TO_DATE(TRIM(A.CREATION_DAY), 'YYYY/MM/DD'), 'yyyy/mm/dd') AS CREATION_DAY, 
+				       NVL(TO_CHAR(TO_DATE(TRIM(A.DESTRUCTION_DAY), 'YYYY/MM/DD'), 'yyyy/mm/dd'), ' ') AS DESTRUCTION_DAY, 
+				       NVL(A.ETC, ' ') AS ETC, 
+				       B.MEM_CODE, 
+				       B.MEM_NAME, 
+				       B.MEM_POST, 
+				       NVL ( C.NAME_1, ' ' ) AS MEM_POST_NM,
+				       CEIL((ROW_NUMBER() OVER(ORDER BY A.DEP_CODE DESC)) / 15) PAGENUM, 
+		       		   CEIL(COUNT( * ) OVER() / 15) TOTALPAGE
+				  FROM DEP_TAB A, 
+				       MEM_TAB B, 
+				       COM_COD C, 
+				       DEP_TAB D 
+				 WHERE 1 = 1 
+				       AND A.DEP_HEAD = B.MEM_CODE 
+				       AND B.MEM_POST = (C.COM_GROUP || C.COM_CODE ) 
+				       AND A.UPPER_DEP = D.DEP_CODE(+)
+				    <isNotEmpty property="dep_code_value">
+						AND A.DEP_CODE IN (SELECT DEP_CODE
+										   FROM DEP_TAB A
+										  WHERE 1 = 1
+										  START WITH DEP_CODE = #dep_code_value#
+										 CONNECT BY UPPER_DEP = PRIOR DEP_CODE)
+					</isNotEmpty>
+					<isEqual property="search_menu" compareValue="dep_info" prepend="">
+						AND A.DEP_CODE = #search_value#
+					</isEqual>
+					<isEqual property="search_menu" compareValue="used" prepend="">
+						AND A.DESTRUCTION_DAY IS NULL
+					</isEqual>
+					<isEqual property="search_menu" compareValue="unused" prepend="">
+						AND A.DESTRUCTION_DAY IS NOT NULL
+					</isEqual>
+				 ORDER BY A.DEP_CODE) 
+		<isNotEmpty property="page">
+		 WHERE PAGENUM = #page#
+		 </isNotEmpty>
+	</select>
+	
+	<select id="insertDepCode" resultClass="java.lang.String">
+		SELECT LPAD(NVL(MAX(TO_NUMBER(DEP_CODE)), 0) + 1, 8, '0') AS CODE FROM DEP_TAB
+	</select>
+	
+	<insert id="saveDepartment">
+		INSERT INTO DEP_TAB
+  				(DEP_CODE
+				,DEP_NAME
+				,DEP_HEAD
+				,UPPER_DEP
+				,CREATION_DAY
+				,DESTRUCTION_DAY
+				,FIR_REG
+				,FIR_REG_DAY
+				,LAT_REG
+				,LAT_REG_DAY
+				,ETC)
+		VALUES
+				(TRIM(#depCode#)
+				,TRIM(#dep_name#)
+				,TRIM(#dep_head#)
+				,TRIM(#upper_dep#)
+				,REPLACE(TRIM(#creation_day#), '/')
+				,REPLACE(TRIM(#destruction_day#), '/')
+				,TRIM(#user_mc#)
+				,TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+				,TRIM(#user_mc#)
+				,TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+				,TRIM(#etc#))
+	</insert>
+	
+	<update id="updateDepartment" parameterClass="java.util.Map">
+		UPDATE DEP_TAB
+			 SET DEP_NAME        		= TRIM(#dep_name#)
+				  ,DEP_HEAD        		= TRIM(#dep_head#)
+				  ,UPPER_DEP       		= TRIM(#upper_dep#)
+				  ,CREATION_DAY    	= REPLACE(TRIM(#creation_day#), '/')
+				  ,DESTRUCTION_DAY 	= REPLACE(TRIM(#destruction_day#), '/')
+				  ,LAT_REG         		= TRIM(#user_mc#)
+				  ,LAT_REG_DAY     	= TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+				  ,ETC             		= TRIM(#etc#)
+		WHERE DEP_CODE = #dep_code#
+	</update>
+	
+	<update id="updateMember" parameterClass="java.util.Map">
+		UPDATE MEM_TAB
+			 SET DEP_CODE = TRIM(#depCode#)
+		 WHERE 1 = 1
+		 	AND MEM_CODE = #dep_head#
+	</update>
+	
+	<update id="updateMemHead">
+		UPDATE MEM_TAB
+			 SET DEP_CODE = TRIM(#dep_code#)
+		 WHERE 1 = 1
+		 	AND MEM_CODE = #dep_head#
+	</update>
+	
+	<select id="desDepMemSearch" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT COUNT(*) AS CNT
+		 FROM MEM_TAB
+		WHERE 1=1
+		<isNotEmpty property="param1" prepend="">
+			AND DEP_CODE = #param1#
+		</isNotEmpty>
+	</select>
+	
+	<update id="updateHeadDep" parameterClass="java.util.Map">
+		UPDATE MEM_TAB
+       		  SET DEP_CODE 		= '00000001'
+       			   ,LAT_REG 			= #user_mc#
+       			   ,LAT_REG_DAY	= TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+     	 WHERE 1 = 1
+     	 	AND MEM_CODE = #dep_head#
+	</update>
+	
+	<select id="depUppderDep" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT COUNT(*) AS CNT
+		 FROM DEP_TAB
+		WHERE 1=1
+  		   AND DESTRUCTION_DAY IS NULL
+		<isNotEmpty property="param1" prepend="">
+			AND UPPER_DEP = #param1#
+		</isNotEmpty>
+	</select>
+	
+</sqlMap>

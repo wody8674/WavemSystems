@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ComCode">
+
+	<select id="searchDepCom" resultClass="java.util.HashMap">
+		SELECT DEP_CODE
+			     ,DEP_NAME
+		 FROM DEP_TAB
+		WHERE 1 = 1
+		   AND USE_CHECK = '1'
+	</select>
+	
+	<select id="searchDepCom2" parameterClass="java.util.Map" resultClass="java.util.HashMap" >
+		SELECT DEP_NAME
+		      ,DEP_CODE
+		  FROM DEP_TAB
+		 WHERE 1 = 1
+		   AND DEP_CODE != #param1#
+		MINUS
+		SELECT DEP_NAME
+		      ,DEP_CODE
+		  FROM DEP_TAB A
+		 WHERE 1 = 1
+		   AND DESTRUCTION_DAY IS NULL
+		 START WITH UPPER_DEP = #param1#
+		CONNECT BY UPPER_DEP = PRIOR DEP_CODE
+	</select>
+	
+	<select id="searchProCom" resultClass="java.util.HashMap">
+		SELECT PRO_CODE
+				,PRO_NAME
+		FROM PRO_TAB
+		WHERE 1 = 1
+	</select>
+	
+	<select id="searchPostCom" resultClass="java.util.HashMap">
+		SELECT COM_GROUP
+      			 ,COM_CODE
+      			 ,NAME_1
+		 FROM COM_COD
+		WHERE COM_GROUP = 'PS'
+	</select>
+	
+	<select id="searchMemCom"  parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT MEM_CODE
+		      	 ,MEM_NAME
+		  FROM MEM_TAB
+		 WHERE 1 = 1
+		   AND TRIM(RETIRE_DAY) IS NULL
+		   <isNotEmpty property="param1" prepend="">
+		   		AND MEM_POST = #param1# 
+		   </isNotEmpty>
+
+	</select>
+	
+	
+	<select id="searchConCom" resultClass="java.util.HashMap">
+		SELECT COM_GROUP
+      			 ,COM_CODE
+      			 ,NAME_1
+		 FROM COM_COD
+		WHERE COM_GROUP = 'EM'
+	</select>
+	
+	<select id="searchEntCom" resultClass="java.util.HashMap">
+		SELECT ENT_NAME
+				 ,ENT_CODE
+		 FROM ENT_TAB
+		WHERE 1=1
+		   AND DESTRUCTION_DAY IS NULL
+	</select>
+	
+	<select id="searchEquTypeCom" resultClass="java.util.HashMap">
+		SELECT COM_GROUP
+      			 ,COM_CODE
+      			 ,NAME_1
+		 FROM COM_COD
+		WHERE COM_GROUP = 'EQ'
+	</select>
+	
+	<select id="searchUseTypeCom" resultClass="java.util.HashMap">
+		SELECT COM_GROUP
+      			 ,COM_CODE
+      			 ,NAME_1
+		 FROM COM_COD
+		WHERE COM_GROUP = 'UT'
+	</select>
+	
+	<select id="searchBokTypeCom" resultClass="java.util.HashMap">
+		SELECT COM_GROUP
+      			 ,COM_CODE
+      			 ,NAME_1
+		 FROM COM_COD
+		WHERE COM_GROUP = 'BK'
+	</select>
+	
+	<select id="searchAppStateCom" resultClass="java.util.HashMap">
+		SELECT COM_GROUP
+      			 ,COM_CODE
+      			 ,NAME_1
+      			 ,NAME_2
+		 FROM COM_COD
+		WHERE COM_GROUP = 'AP'
+	</select>
+	
+	<select id="searchBreCom" resultClass="java.util.HashMap">
+		SELECT COM_GROUP
+      			 ,COM_CODE
+      			 ,NAME_1
+		 FROM COM_COD
+		WHERE COM_GROUP = 'BR'
+	</select>
+	
+	<select id="searchNigCom" resultClass="java.util.HashMap">
+		SELECT COM_GROUP
+      			 ,COM_CODE
+      			 ,NAME_1
+		 FROM COM_COD
+		WHERE COM_GROUP = 'NI'
+	</select>
+	
+</sqlMap>

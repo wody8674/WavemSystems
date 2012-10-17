@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	<link rel="stylesheet" href="css/jQueryAjaxJson2.css"/>
+</head>
+<body>
+	<h1>사용자 조회</h1>
+	
+	<form id="searchIdForm" method="post">
+		<input type="text" id="user_id" name="user_id" value="superuser"/>
+		<input type="text" id="nonSubmit"> <!-- form안에 text박스가 하나 있을 때 Enter누를 시 submit되는 현상 방시 -->
+		<input type="button" id="btnSearch" value="검색"/>
+		<input type="button" id="btnSave" value="저장"/>
+	</form>
+	
+	<form id="saveForm" method="post">
+		<table>
+			<tr>
+				<td>사용자 ID</td>
+				<td>: <input type="text" id="userid" name="userid"/></td>
+			</tr>
+			<tr>
+				<td>소속 코드</td>
+				<td>: <input type="text" id="assigncd" name="assigncd"/></td>
+			</tr>
+			<tr>
+				<td>사용자 이름</td>
+				<td>: <input type="text" id="usernm" name="usernm"/></td>
+			</tr>
+			<tr>
+				<td>직급</td>
+				<td>: <input type="text" id="levelnm" name="levelnm"/></td>
+			</tr>
+			<tr>
+				<td>휴대폰 번호</td>
+				<td>: <input type="text" id="hp" name="hp"/></td>
+			</tr>
+			<tr>
+				<td>e-mail</td>
+				<td>: <input type="text" id="email" name="email"/></td>
+			</tr>
+		</table>
+	</form>
+	
+	<div id="divText">
+		<p>전문 : </p>
+		<p class="text"></p>
+		<br />
+		<p>전문 : </p>
+		<p class="text2"></p>
+		<br />
+		<p>전문 : </p>
+		<p class="text3"></p>
+	</div>
+	
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+	<script type="text/javascript" src="js/lib/json2.js"></script>
+	<script type="text/javascript" src="js/jQueryAjaxJson2.js"></script>
+	
+</body>
+</html>

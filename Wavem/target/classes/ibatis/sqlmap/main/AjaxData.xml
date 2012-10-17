@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="AjaxData">
+	
+	<typeAlias alias="ajaxMap" type="com.wavem.convergence.main.vo.AjaxVo"/>
+
+	<select id="selectAjax" parameterClass="java.util.Map" resultClass="ajaxMap">
+		<![CDATA[
+		SELECT USER_ID
+		      ,ASSIGN_CD
+		      ,USER_NM
+		      ,LEVEL_NM
+		      ,HP
+		      ,EMAIL
+		  FROM RESTCM_USERCD_MST
+		 WHERE USER_ID = #param_user_id#
+		 ]]>
+	</select>
+	
+	<select id="selectAjaxJson" parameterClass="java.util.Map" resultClass="ajaxMap">
+		SELECT USER_ID
+		      ,ASSIGN_CD
+		      ,USER_NM
+		      ,LEVEL_NM
+		      ,HP
+		      ,EMAIL
+		  FROM RESTCM_USERCD_MST
+		 WHERE USER_ID = #param_user_id#
+	</select>
+	
+</sqlMap>
+	
